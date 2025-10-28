@@ -42,7 +42,7 @@ services:
     volumes:
       - orangehrm_data:/var/www/html
     ports:
-      - "127.0.0.1:8080:80"  # Only accessible from localhost, proxy via your Nginx
+      - "8080:80"  # Accessible on network for Nginx server to proxy
     networks:
       - orangehrm_network
 
