@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: orangehrm_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - orangehrm_network
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=200 --innodb_buffer_pool_size=1G
+
+  # OrangeHRM Application
+  orangehrm:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: orangehrm_app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - OHRM_DB_HOST=mysql
+      - OHRM_DB_PORT=3306
+      - OHRM_DB_NAME=${MYSQL_DATABASE}
+      - OHRM_DB_USER=${MYSQL_USER}
+      - OHRM_DB_PASSWORD=${MYSQL_PASSWORD}
+      - OHRM_APP_ENV=production
+      - OHRM_APP_DEBUG=false
+    volumes:
+      - orangehrm_data:/var/www/html
+      - ./src/config:/var/www/html/src/config
+      - ./src/cache:/var/www/html/src/cache
+      - ./src/log:/var/www/html/src/log
+    networks:
+      - orangehrm_network
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: orangehrm_nginx
+    restart: unless-stopped
+    depends_on:
+      - orangehrm
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - orangehrm_data:/var/www/html:ro
+    networks:
+      - orangehrm_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for Session Storage
+  redis:
+    image: redis:7-alpine
+    container_name: orangehrm_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - orangehrm_network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Monitoring with Prometheus (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: orangehrm_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - orangehrm_network
+    profiles:
+      - monitoring
+
+  # Grafana for Visualization (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: orangehrm_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - orangehrm_network
+    profiles:
+      - monitoring
+
+volumes:
+  mysql_data:
+    driver: local
+  orangehrm_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  orangehrm_network:
+    driver: bridge

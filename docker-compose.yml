@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: orangehrm_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-orangehrm_mysql}
+      MYSQL_USER: ${MYSQL_USER:-orangehrm}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-orangehrm123}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - orangehrm_network
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # OrangeHRM Application
+  orangehrm:
+    build: .
+    container_name: orangehrm_app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
+      - DB_USER=${MYSQL_USER:-orangehrm}
+      - DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
+      - OHRM_DB_HOST=mysql
+      - OHRM_DB_PORT=3306
+      - OHRM_DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
+      - OHRM_DB_USER=${MYSQL_USER:-orangehrm}
+      - OHRM_DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
+    volumes:
+      - orangehrm_data:/var/www/html
+      - ./src/config:/var/www/html/src/config
+      - ./src/cache:/var/www/html/src/cache
+      - ./src/log:/var/www/html/src/log
+    ports:
+      - "8080:80"
+    networks:
+      - orangehrm_network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: orangehrm_nginx
+    restart: unless-stopped
+    depends_on:
+      - orangehrm
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - orangehrm_data:/var/www/html:ro
+    networks:
+      - orangehrm_network
+
+  # Redis for Session Storage (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: orangehrm_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - orangehrm_network
+    command: redis-server --appendonly yes
+
+volumes:
+  mysql_data:
+    driver: local
+  orangehrm_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  orangehrm_network:
+    driver: bridge
