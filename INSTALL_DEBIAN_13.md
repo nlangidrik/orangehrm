@@ -290,7 +290,7 @@ Expected (since Nginx is on a different server):
 
 ```bash
 # Create Nginx config for OrangeHRM
-sudo nano /etc/nginx/sites-available/orangehrm
+sudo nano /etc/nginx/sites-available/psshrm
 ```
 
 **Paste this configuration:**
@@ -327,8 +327,8 @@ server {
     client_max_body_size 50M;
 
     # Logging
-    access_log /var/log/nginx/orangehrm_access.log;
-    error_log /var/log/nginx/orangehrm_error.log;
+    access_log /var/log/nginx/psshrm_access.log;
+    error_log /var/log/nginx/psshrm_error.log;
 
     # Proxy to OrangeHRM Docker container (on different server)
     location / {
@@ -370,7 +370,7 @@ server {
 
 ```bash
 # Enable the site
-sudo ln -s /etc/nginx/sites-available/orangehrm /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/psshrm /etc/nginx/sites-enabled/
 
 # Test Nginx configuration
 sudo nginx -t
