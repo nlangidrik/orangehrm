@@ -8,8 +8,9 @@
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-if="showUpgrade" #topbar-header-right-area>
-      <upgrade-button v-if="showUpgrade" />
+    <!-- Upgrade button removed for Marshall Islands PSS -->
+    <template v-if="false" #topbar-header-right-area>
+      <upgrade-button v-if="false" />
     </template>
     <template #user-actions>
       <li>

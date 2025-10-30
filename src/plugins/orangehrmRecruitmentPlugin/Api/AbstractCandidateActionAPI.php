@@ -230,13 +230,60 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
      */
     protected function setCandidateAsEmployee(CandidateVacancy $candidateVacancy, Employee $employee)
     {
-        $employee->setFirstName($candidateVacancy->getCandidate()->getFirstName());
-        $employee->setMiddleName($candidateVacancy->getCandidate()->getMiddleName() ?? '');
-        $employee->setLastName($candidateVacancy->getCandidate()->getLastName());
-        $employee->setOtherEmail($candidateVacancy->getCandidate()->getEmail());
+        $candidate = $candidateVacancy->getCandidate();
+        
+        // Basic info
+        $employee->setFirstName($candidate->getFirstName());
+        $employee->setMiddleName($candidate->getMiddleName() ?? '');
+        $employee->setLastName($candidate->getLastName());
+        $employee->setOtherEmail($candidate->getEmail());
         $employee->getDecorator()->setJobTitleById(
             $candidateVacancy->getVacancy()->getJobTitle()->getId()
         );
+        
+        // Parse PSS custom data from comment field
+        $comment = $candidate->getComment();
+        if ($comment && strpos($comment, '=== Personal Details ===') !== false) {
+            $lines = explode("\n", $comment);
+            foreach ($lines as $line) {
+                // Extract Gender (matches PIM format: 1=Male, 2=Female)
+                if (strpos($line, 'Gender:') !== false) {
+                    if (strpos($line, 'Male') !== false) {
+                        $employee->getDecorator()->setGender(1);
+                    } elseif (strpos($line, 'Female') !== false) {
+                        $employee->getDecorator()->setGender(2);
+                    }
+                }
+                
+                // Extract Date of Birth
+                if (strpos($line, 'DOB:') !== false) {
+                    $dob = trim(str_replace('DOB:', '', $line));
+                    try {
+                        $dobDate = new \DateTime($dob);
+                        $employee->getDecorator()->setBirthday($dobDate);
+                    } catch (\Exception $e) {
+                        // Skip if date is invalid
+                    }
+                }
+                
+                // Extract Marital Status
+                if (strpos($line, 'Marital Status:') !== false) {
+                    $marital = trim(str_replace('Marital Status:', '', $line));
+                    $employee->setMaritalStatus($marital);
+                }
+                
+                // Extract Cell Number as mobile
+                if (strpos($line, 'Cell:') !== false) {
+                    $cell = trim(str_replace('Cell:', '', $line));
+                    $employee->getDecorator()->setMobile($cell);
+                }
+            }
+        }
+        
+        // Use contact number as mobile if available
+        if ($candidate->getContactNumber()) {
+            $employee->getDecorator()->setMobile($candidate->getContactNumber());
+        }
     }
 
     /**
