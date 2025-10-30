@@ -225,6 +225,7 @@
                   name="dateOfBirth"
                   label="Date of Birth"
                   type="date"
+                  :display-format="'MM-dd-yyyy'"
                   :rules="rules.dateOfBirth"
                   required
                 />
@@ -323,9 +324,10 @@
               <oxd-grid-item class="orangehrm-applicant-container-colspan-2">
                 <oxd-input-field
                   v-model="applicant.nationality"
+                  type="select"
                   name="nationality"
                   label="If NO, Nationality"
-                  placeholder="Type here"
+                  :options="nationalityOptions"
                   :rules="rules.nationality"
                 />
               </oxd-grid-item>
@@ -506,7 +508,7 @@
 </template>
 
 <script>
-import {ref, toRefs} from 'vue';
+import {ref, toRefs, onBeforeMount} from 'vue';
 import FullNameInput from '@/orangehrmPimPlugin/components/FullNameInput';
 import SuccessDialog from '@/orangehrmRecruitmentPlugin/components/SuccessDialog';
 import {
@@ -605,11 +607,29 @@ export default {
       window.appGlobal.baseUrl,
       '/api/v2/recruitment/public/vacancies',
     );
+    
+    // Fetch nationality options
+    const nationalityOptions = ref([]);
+    const nationalityHttp = new APIService(
+      window.appGlobal.baseUrl,
+      '/api/v2/admin/nationalities',
+    );
+    onBeforeMount(() => {
+      nationalityHttp.getAll({limit: 0}).then(({data}) => {
+        nationalityOptions.value = data.data.map((item) => {
+          return {
+            id: item.id,
+            label: item.name || item.label, // Use name, fallback to label
+          };
+        });
+      });
+    });
 
     return {
       http,
       applicant,
       defaultPic,
+      nationalityOptions,
       ...toRefs(responsiveState),
     };
   },
@@ -630,7 +650,7 @@ export default {
           maxFileSize(this.maxFileSize),
           validFileTypes(this.allowedFileTypes),
         ],
-        comment: [shouldNotExceedCharLength(250)],
+        comment: [], // No length limit - contains PSS custom data
         keywords: [shouldNotExceedCharLength(250)],
         contactNumber: [shouldNotExceedCharLength(25), validPhoneNumberFormat],
         email: [required, validEmailFormat, shouldNotExceedCharLength(50)],
@@ -665,8 +685,40 @@ export default {
     };
   },
   computed: {
+    compiledComment() {
+      // Compile all PSS custom fields into comment
+      const pssDetails = [];
+      if (this.applicant.socialSecurityNo) pssDetails.push(`SSN: ${this.applicant.socialSecurityNo}`);
+      if (this.applicant.dateOfBirth) pssDetails.push(`DOB: ${this.applicant.dateOfBirth}`);
+      if (this.applicant.placeOfBirth) pssDetails.push(`Place of Birth: ${this.applicant.placeOfBirth}`);
+      if (this.applicant.gender) pssDetails.push(`Gender: ${this.applicant.gender === '1' ? 'Male' : 'Female'}`);
+      if (this.applicant.maritalStatus) {
+        const maritalValue = typeof this.applicant.maritalStatus === 'object' 
+          ? this.applicant.maritalStatus.label 
+          : this.applicant.maritalStatus;
+        pssDetails.push(`Marital Status: ${maritalValue}`);
+      }
+      if (this.applicant.homeAddress) pssDetails.push(`Home: ${this.applicant.homeAddress}, ${this.applicant.homeCity}, ${this.applicant.homeState} ${this.applicant.homeZipCode}`);
+      if (this.applicant.homePhoneNo) pssDetails.push(`Home Phone: ${this.applicant.homePhoneNo}`);
+      if (this.applicant.cellNo) pssDetails.push(`Cell: ${this.applicant.cellNo}`);
+      if (this.applicant.correspondenceAddress) pssDetails.push(`Correspondence: ${this.applicant.correspondenceAddress}, ${this.applicant.correspondenceCity}, ${this.applicant.correspondenceState} ${this.applicant.correspondenceZipCode}`);
+      if (this.applicant.citizenOfMarshalls) pssDetails.push(`Citizen of Marshalls: ${this.applicant.citizenOfMarshalls}`);
+      if (this.applicant.nationality) {
+        const nationalityValue = typeof this.applicant.nationality === 'object' 
+          ? this.applicant.nationality.label 
+          : this.applicant.nationality;
+        pssDetails.push(`Nationality: ${nationalityValue}`);
+      }
+      if (this.applicant.childrenAges) pssDetails.push(`Children's Ages: ${this.applicant.childrenAges}`);
+      if (this.applicant.nextOfKinName) pssDetails.push(`Next of Kin: ${this.applicant.nextOfKinName} (${this.applicant.nextOfKinRelationship})`);
+      if (this.applicant.nextOfKinAddress) pssDetails.push(`NOK Address: ${this.applicant.nextOfKinAddress}, ${this.applicant.nextOfKinCity}, ${this.applicant.nextOfKinState} ${this.applicant.nextOfKinZipCode}`);
+      
+      const originalComment = this.applicant.comment || '';
+      const pssData = pssDetails.join('\n');
+      return originalComment ? `${originalComment}\n\n=== Personal Details ===\n${pssData}` : `=== Personal Details ===\n${pssData}`;
+    },
     submitUrl() {
-      return urlFor('/recruitment/public/applicants');
+      return `${window.appGlobal.baseUrl}/recruitment/public/applicants`;
     },
     descriptionClasses() {
       return {
@@ -699,34 +751,18 @@ export default {
   },
   methods: {
     onSave() {
-      // Compile all PSS custom fields into the comment field
-      const pssDetails = [];
-      if (this.applicant.socialSecurityNo) pssDetails.push(`SSN: ${this.applicant.socialSecurityNo}`);
-      if (this.applicant.dateOfBirth) pssDetails.push(`DOB: ${this.applicant.dateOfBirth}`);
-      if (this.applicant.placeOfBirth) pssDetails.push(`Place of Birth: ${this.applicant.placeOfBirth}`);
-      if (this.applicant.gender) pssDetails.push(`Gender: ${this.applicant.gender === '1' ? 'Male' : 'Female'}`);
-      if (this.applicant.maritalStatus) pssDetails.push(`Marital Status: ${this.applicant.maritalStatus}`);
-      if (this.applicant.homeAddress) pssDetails.push(`Home: ${this.applicant.homeAddress}, ${this.applicant.homeCity}, ${this.applicant.homeState} ${this.applicant.homeZipCode}`);
-      if (this.applicant.homePhoneNo) pssDetails.push(`Home Phone: ${this.applicant.homePhoneNo}`);
-      if (this.applicant.cellNo) pssDetails.push(`Cell: ${this.applicant.cellNo}`);
-      if (this.applicant.correspondenceAddress) pssDetails.push(`Correspondence: ${this.applicant.correspondenceAddress}, ${this.applicant.correspondenceCity}, ${this.applicant.correspondenceState} ${this.applicant.correspondenceZipCode}`);
-      if (this.applicant.citizenOfMarshalls) pssDetails.push(`Citizen of Marshalls: ${this.applicant.citizenOfMarshalls}`);
-      if (this.applicant.nationality) pssDetails.push(`Nationality: ${this.applicant.nationality}`);
-      if (this.applicant.childrenAges) pssDetails.push(`Children's Ages: ${this.applicant.childrenAges}`);
-      if (this.applicant.nextOfKinName) pssDetails.push(`Next of Kin: ${this.applicant.nextOfKinName} (${this.applicant.nextOfKinRelationship})`);
-      if (this.applicant.nextOfKinAddress) pssDetails.push(`NOK Address: ${this.applicant.nextOfKinAddress}, ${this.applicant.nextOfKinCity}, ${this.applicant.nextOfKinState} ${this.applicant.nextOfKinZipCode}`);
-      
-      // Append to existing comment
-      const originalComment = this.applicant.comment || '';
-      const pssData = pssDetails.join('\n');
-      this.applicant.comment = originalComment ? `${originalComment}\n\n=== Personal Details ===\n${pssData}` : `=== Personal Details ===\n${pssData}`;
+      // Compile PSS data and update comment field
+      this.applicant.comment = this.compiledComment;
       
       // Use cell number as contact number if not provided
       if (!this.applicant.contactNumber && this.applicant.cellNo) {
         this.applicant.contactNumber = this.applicant.cellNo;
       }
       
-      this.$refs.applicantForm.$el.submit();
+      // Wait for Vue to update DOM, then submit
+      this.$nextTick(() => {
+        this.$refs.applicantForm.$el.submit();
+      });
     },
     onCancel() {
       navigate('/recruitmentApply/jobs.html');

@@ -245,6 +245,9 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
         $comment = $candidate->getComment();
         if ($comment && strpos($comment, '=== Personal Details ===') !== false) {
             $lines = explode("\n", $comment);
+            $citizenOfMarshalls = null;
+            $nationality = null;
+            
             foreach ($lines as $line) {
                 // Extract Gender (matches PIM format: 1=Male, 2=Female)
                 if (strpos($line, 'Gender:') !== false) {
@@ -277,6 +280,25 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
                     $cell = trim(str_replace('Cell:', '', $line));
                     $employee->getDecorator()->setMobile($cell);
                 }
+                
+                // Extract Citizenship status
+                if (strpos($line, 'Citizen of Marshalls:') !== false) {
+                    $citizenOfMarshalls = trim(str_replace('Citizen of Marshalls:', '', $line));
+                }
+                
+                // Extract Nationality (if provided)
+                if (strpos($line, 'Nationality:') !== false && strpos($line, 'Citizen of Marshalls:') === false) {
+                    $nationality = trim(str_replace('Nationality:', '', $line));
+                }
+            }
+            
+            // Set Nationality based on citizenship
+            if ($citizenOfMarshalls === 'yes') {
+                // If citizen of Marshalls, set nationality as Marshallese
+                $employee->getDecorator()->setNationalityByName('Marshallese');
+            } elseif ($nationality) {
+                // If not citizen, use provided nationality
+                $employee->getDecorator()->setNationalityByName($nationality);
             }
         }
         
