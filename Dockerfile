@@ -1,10 +1,6 @@
 FROM php:8.3-apache-bookworm
 
-ENV OHRM_VERSION 5.7
-ENV OHRM_MD5 5bd924a546e29e06c34eec73b014d139
-
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
+# Install system dependencies including Node.js for building Vue.js frontend
 RUN set -ex; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
@@ -16,18 +12,18 @@ RUN set -ex; \
 		libldap2-dev \
 		libicu-dev \
 		unzip \
+		git \
+		curl \
 	; \
 	\
-	cd .. && rm -r html; \
-	curl -fSL -o orangehrm.zip "https://sourceforge.net/projects/orangehrm/files/stable/${OHRM_VERSION}/orangehrm-${OHRM_VERSION}.zip"; \
-	echo "${OHRM_MD5} orangehrm.zip" | md5sum -c -; \
-	unzip -q orangehrm.zip "orangehrm-${OHRM_VERSION}/*"; \
-	mv orangehrm-$OHRM_VERSION html; \
-	rm -rf orangehrm.zip; \
-	chown www-data:www-data html; \
-	chown -R www-data:www-data html/src/cache html/src/log html/src/config; \
-	chmod -R 775 html/src/cache html/src/log html/src/config; \
+	# Install Node.js 18.x (LTS) for building Vue.js frontend
+	curl -fsSL https://deb.nodesource.com/setup_18.x | bash -; \
+	apt-get install -y nodejs; \
 	\
+	# Install Yarn package manager
+	npm install -g yarn; \
+	\
+	# Configure and install PHP extensions
 	docker-php-ext-configure gd --with-freetype --with-jpeg; \
 	docker-php-ext-configure ldap \
 	    --with-libdir=lib/$(uname -m)-linux-gnu/ \
@@ -42,8 +38,9 @@ RUN set -ex; \
 		ldap \
 	; \
 	\
+	# Clean up unnecessary packages but keep Node.js and npm
 	apt-mark auto '.*' > /dev/null; \
-	apt-mark manual $savedAptMark; \
+	apt-mark manual $savedAptMark nodejs; \
 	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
 		| awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
 		| sort -u \
@@ -56,6 +53,7 @@ RUN set -ex; \
 	rm -rf /var/cache/apt/archives; \
 	rm -rf /var/lib/apt/lists/*
 
+# Configure PHP OPcache
 RUN { \
 		echo 'opcache.memory_consumption=128'; \
 		echo 'opcache.interned_strings_buffer=8'; \
@@ -69,4 +67,30 @@ RUN { \
 		a2enmod rewrite; \
 	fi;
 
-VOLUME ["/var/www/html"]
+# Update PHP configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+# Copy local source code to container (uses .dockerignore to exclude unnecessary files)
+COPY --chown=www-data:www-data . /var/www/html/
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Build Vue.js frontend with custom application form fields
+RUN cd src/client && \
+	echo "Installing frontend dependencies..." && \
+	yarn install --frozen-lockfile && \
+	echo "Building Vue.js frontend with custom application form..." && \
+	yarn build && \
+	echo "Frontend build completed successfully!" && \
+	cd ../..
+
+# Set proper permissions for writable directories
+RUN chown -R www-data:www-data /var/www/html && \
+	chmod -R 775 /var/www/html/src/cache /var/www/html/src/log /var/www/html/src/config
+
+# Expose port 80
+EXPOSE 80
+
+# Start Apache
+CMD ["apache2-foreground"]
