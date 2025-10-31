@@ -72,6 +72,33 @@ class ApplicantController extends AbstractController implements PublicController
     public const PARAMETER_KEYWORDS = 'keywords';
     public const PARAMETER_COMMENT = 'comment';
     public const PARAMETER_CONSENT_TO_KEEP_DATA = 'consentToKeepData';
+    
+    // PSS Custom Fields
+    public const PARAMETER_SOCIAL_SECURITY_NO = 'socialSecurityNo';
+    public const PARAMETER_HOME_ADDRESS = 'homeAddress';
+    public const PARAMETER_HOME_CITY = 'homeCity';
+    public const PARAMETER_HOME_STATE = 'homeState';
+    public const PARAMETER_HOME_ZIP_CODE = 'homeZipCode';
+    public const PARAMETER_HOME_PHONE_NO = 'homePhoneNo';
+    public const PARAMETER_CELL_NO = 'cellNo';
+    public const PARAMETER_CORRESPONDENCE_ADDRESS = 'correspondenceAddress';
+    public const PARAMETER_CORRESPONDENCE_CITY = 'correspondenceCity';
+    public const PARAMETER_CORRESPONDENCE_STATE = 'correspondenceState';
+    public const PARAMETER_CORRESPONDENCE_ZIP_CODE = 'correspondenceZipCode';
+    public const PARAMETER_EMAIL_ADDRESS = 'emailAddress';
+    public const PARAMETER_DATE_OF_BIRTH = 'dateOfBirth';
+    public const PARAMETER_PLACE_OF_BIRTH = 'placeOfBirth';
+    public const PARAMETER_GENDER = 'gender';
+    public const PARAMETER_MARITAL_STATUS = 'maritalStatus';
+    public const PARAMETER_CITIZEN_OF_MARSHALLS = 'citizenOfMarshalls';
+    public const PARAMETER_NATIONALITY = 'nationality';
+    public const PARAMETER_CHILDREN_AGES = 'childrenAges';
+    public const PARAMETER_NEXT_OF_KIN_NAME = 'nextOfKinName';
+    public const PARAMETER_NEXT_OF_KIN_RELATIONSHIP = 'nextOfKinRelationship';
+    public const PARAMETER_NEXT_OF_KIN_ADDRESS = 'nextOfKinAddress';
+    public const PARAMETER_NEXT_OF_KIN_CITY = 'nextOfKinCity';
+    public const PARAMETER_NEXT_OF_KIN_STATE = 'nextOfKinState';
+    public const PARAMETER_NEXT_OF_KIN_ZIP_CODE = 'nextOfKinZipCode';
 
     /**
      * @var ValidationDecorator|null
@@ -295,6 +322,82 @@ class ApplicantController extends AbstractController implements PublicController
                     self::PARAMETER_CONSENT_TO_KEEP_DATA,
                     new Rule(Rules::BOOL_VAL)
                 )
+            ),
+            // PSS Custom Fields - All optional
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_SOCIAL_SECURITY_NO, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 20])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_HOME_ADDRESS, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 250])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_HOME_CITY, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_HOME_STATE, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_HOME_ZIP_CODE, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 10])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_HOME_PHONE_NO, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 25])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CELL_NO, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 25])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CORRESPONDENCE_ADDRESS, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 250])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CORRESPONDENCE_CITY, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CORRESPONDENCE_STATE, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CORRESPONDENCE_ZIP_CODE, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 10])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_EMAIL_ADDRESS, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_DATE_OF_BIRTH, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 20])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_PLACE_OF_BIRTH, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 100])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_GENDER, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 10])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_MARITAL_STATUS, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 20])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CITIZEN_OF_MARSHALLS, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 3])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NATIONALITY, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_CHILDREN_AGES, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 100])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NEXT_OF_KIN_NAME, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 100])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NEXT_OF_KIN_RELATIONSHIP, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NEXT_OF_KIN_ADDRESS, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 250])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NEXT_OF_KIN_CITY, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NEXT_OF_KIN_STATE, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 50])), true
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(self::PARAMETER_NEXT_OF_KIN_ZIP_CODE, new Rule(Rules::STRING_TYPE), new Rule(Rules::LENGTH, [null, 10])), true
             ),
         );
     }

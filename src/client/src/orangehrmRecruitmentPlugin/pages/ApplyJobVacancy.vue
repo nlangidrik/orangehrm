@@ -82,9 +82,101 @@
               </oxd-grid-item>
             </oxd-grid>
           </oxd-form-row>
+          
+          <!-- Social Security Number -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.socialSecurityNo"
+                  name="socialSecurityNo"
+                  label="Social Security No."
+                  placeholder="Type here"
+                  :rules="rules.socialSecurityNo"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Home Address and Phone -->
           <oxd-form-row class="orangehrm-applicant-container-row">
             <oxd-grid :cols="3" class="orangehrm-full-width-grid">
               <oxd-grid-item class="orangehrm-applicant-container-colspan-2">
+                <oxd-input-field
+                  v-model="applicant.homeAddress"
+                  name="homeAddress"
+                  label="Home Address"
+                  placeholder="Type here"
+                  :rules="rules.homeAddress"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.homePhoneNo"
+                  name="homePhoneNo"
+                  label="Phone No."
+                  placeholder="Type here"
+                  :rules="rules.homePhoneNo"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Home City, State, Zip, Cell -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="4" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.homeCity"
+                  name="homeCity"
+                  label="City"
+                  placeholder="Type here"
+                  :rules="rules.homeCity"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.homeState"
+                  name="homeState"
+                  label="Country/State"
+                  placeholder="Type here"
+                  :rules="rules.homeState"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.homeZipCode"
+                  name="homeZipCode"
+                  label="Zip Code"
+                  placeholder="Type here"
+                  :rules="rules.homeZipCode"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.cellNo"
+                  name="cellNo"
+                  label="Cell No."
+                  placeholder="Type here"
+                  :rules="rules.cellNo"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Correspondence Address and Email -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item class="orangehrm-applicant-container-colspan-2">
+                <oxd-input-field
+                  v-model="applicant.correspondenceAddress"
+                  name="correspondenceAddress"
+                  label="Correspondence Address"
+                  placeholder="Type here"
+                  :rules="rules.correspondenceAddress"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
                 <oxd-input-field
                   v-model="applicant.email"
                   name="email"
@@ -94,6 +186,223 @@
                   required
                 />
               </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Correspondence City, State, Zip, Date of Birth -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="4" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.correspondenceCity"
+                  name="correspondenceCity"
+                  label="City"
+                  placeholder="Type here"
+                  :rules="rules.correspondenceCity"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.correspondenceState"
+                  name="correspondenceState"
+                  label="Country/State"
+                  placeholder="Type here"
+                  :rules="rules.correspondenceState"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.correspondenceZipCode"
+                  name="correspondenceZipCode"
+                  label="Zip Code"
+                  placeholder="Type here"
+                  :rules="rules.correspondenceZipCode"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.dateOfBirth"
+                  name="dateOfBirth"
+                  label="Date of Birth"
+                  type="date"
+                  :display-format="'MM-dd-yyyy'"
+                  :rules="rules.dateOfBirth"
+                  required
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Place of Birth -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item class="orangehrm-applicant-container-colspan-2">
+                <oxd-input-field
+                  v-model="applicant.placeOfBirth"
+                  name="placeOfBirth"
+                  label="Place of Birth"
+                  placeholder="Type here"
+                  :rules="rules.placeOfBirth"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Gender and Marital Status -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-group label="Gender" :classes="{wrapper: '--grouped-field'}" required>
+                  <oxd-input-field
+                    v-model="applicant.gender"
+                    type="radio"
+                    option-label="Male"
+                    value="1"
+                  />
+                  <oxd-input-field
+                    v-model="applicant.gender"
+                    type="radio"
+                    option-label="Female"
+                    value="2"
+                  />
+                </oxd-input-group>
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.maritalStatus"
+                  name="maritalStatus"
+                  label="Marital Status"
+                  type="select"
+                  :rules="rules.maritalStatus"
+                  required
+                  :options="[
+                    { id: 'married', label: 'Married' },
+                    { id: 'widowed', label: 'Widowed' },
+                    { id: 'separated', label: 'Separated' },
+                    { id: 'single', label: 'Single' },
+                    { id: 'divorced', label: 'Divorced' }
+                  ]"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Citizenship and Children's Ages -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-group label="Citizen of Marshalls" :classes="{wrapper: '--grouped-field'}" required>
+                  <oxd-input-field
+                    v-model="applicant.citizenOfMarshalls"
+                    type="radio"
+                    option-label="Yes"
+                    value="yes"
+                  />
+                  <oxd-input-field
+                    v-model="applicant.citizenOfMarshalls"
+                    type="radio"
+                    option-label="No"
+                    value="no"
+                  />
+                </oxd-input-group>
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.childrenAges"
+                  name="childrenAges"
+                  label="Children's Ages"
+                  placeholder="e.g., 5, 8, 12"
+                  :rules="rules.childrenAges"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Nationality (if not Marshallese) -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item class="orangehrm-applicant-container-colspan-2">
+                <oxd-input-field
+                  v-model="applicant.nationality"
+                  type="select"
+                  name="nationality"
+                  label="If NO, Nationality"
+                  :options="nationalityOptions"
+                  :rules="rules.nationality"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Next of Kin Name and Relationship -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.nextOfKinName"
+                  name="nextOfKinName"
+                  label="Next of Kin Name"
+                  placeholder="Type here"
+                  :rules="rules.nextOfKinName"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.nextOfKinRelationship"
+                  name="nextOfKinRelationship"
+                  label="Relationship"
+                  placeholder="Type here"
+                  :rules="rules.nextOfKinRelationship"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Next of Kin Address -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="4" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.nextOfKinAddress"
+                  name="nextOfKinAddress"
+                  label="Address"
+                  placeholder="Type here"
+                  :rules="rules.nextOfKinAddress"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.nextOfKinCity"
+                  name="nextOfKinCity"
+                  label="City"
+                  placeholder="Type here"
+                  :rules="rules.nextOfKinCity"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.nextOfKinState"
+                  name="nextOfKinState"
+                  label="Country/State"
+                  placeholder="Type here"
+                  :rules="rules.nextOfKinState"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.nextOfKinZipCode"
+                  name="nextOfKinZipCode"
+                  label="Zip Code"
+                  placeholder="Type here"
+                  :rules="rules.nextOfKinZipCode"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Contact Number (original field kept for compatibility) -->
+          <oxd-form-row class="orangehrm-applicant-container-row" style="display:none;">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
               <oxd-grid-item>
                 <oxd-input-field
                   v-model="applicant.contactNumber"
@@ -199,7 +508,7 @@
 </template>
 
 <script>
-import {ref, toRefs} from 'vue';
+import {ref, toRefs, onBeforeMount} from 'vue';
 import FullNameInput from '@/orangehrmPimPlugin/components/FullNameInput';
 import SuccessDialog from '@/orangehrmRecruitmentPlugin/components/SuccessDialog';
 import {
@@ -214,7 +523,7 @@ import SubmitButton from '@/core/components/buttons/SubmitButton';
 import {navigate} from '@/core/util/helper/navigation';
 import {APIService} from '@/core/util/services/api.service';
 import {urlFor} from '@/core/util/helper/url';
-import {useResponsive} from '@ohrm/oxd';
+import {useResponsive, OxdInputGroup} from '@ohrm/oxd';
 
 const applicantModel = {
   firstName: '',
@@ -226,6 +535,32 @@ const applicantModel = {
   resume: null,
   keywords: null,
   comment: null,
+  // Additional Personal Details for PSS
+  socialSecurityNo: '',
+  homeAddress: '',
+  homeCity: '',
+  homeState: '',
+  homeZipCode: '',
+  homePhoneNo: '',
+  cellNo: '',
+  correspondenceAddress: '',
+  correspondenceCity: '',
+  correspondenceState: '',
+  correspondenceZipCode: '',
+  emailAddress: '',
+  dateOfBirth: '',
+  placeOfBirth: '',
+  gender: '',
+  maritalStatus: '',
+  citizenOfMarshalls: '',
+  nationality: '',
+  childrenAges: '',
+  nextOfKinName: '',
+  nextOfKinRelationship: '',
+  nextOfKinAddress: '',
+  nextOfKinCity: '',
+  nextOfKinState: '',
+  nextOfKinZipCode: '',
 };
 
 export default {
@@ -234,6 +569,7 @@ export default {
     'submit-button': SubmitButton,
     'full-name-input': FullNameInput,
     'success-dialogue': SuccessDialog,
+    'oxd-input-group': OxdInputGroup,
   },
   props: {
     allowedFileTypes: {
@@ -271,11 +607,29 @@ export default {
       window.appGlobal.baseUrl,
       '/api/v2/recruitment/public/vacancies',
     );
+    
+    // Fetch nationality options
+    const nationalityOptions = ref([]);
+    const nationalityHttp = new APIService(
+      window.appGlobal.baseUrl,
+      '/api/v2/admin/nationalities',
+    );
+    onBeforeMount(() => {
+      nationalityHttp.getAll({limit: 0}).then(({data}) => {
+        nationalityOptions.value = data.data.map((item) => {
+          return {
+            id: item.id,
+            label: item.name || item.label, // Use name, fallback to label
+          };
+        });
+      });
+    });
 
     return {
       http,
       applicant,
       defaultPic,
+      nationalityOptions,
       ...toRefs(responsiveState),
     };
   },
@@ -296,17 +650,75 @@ export default {
           maxFileSize(this.maxFileSize),
           validFileTypes(this.allowedFileTypes),
         ],
-        comment: [shouldNotExceedCharLength(250)],
+        comment: [], // No length limit - contains PSS custom data
         keywords: [shouldNotExceedCharLength(250)],
         contactNumber: [shouldNotExceedCharLength(25), validPhoneNumberFormat],
         email: [required, validEmailFormat, shouldNotExceedCharLength(50)],
+        // Additional field validations for PSS
+        socialSecurityNo: [shouldNotExceedCharLength(20)],
+        homeAddress: [shouldNotExceedCharLength(250)],
+        homeCity: [shouldNotExceedCharLength(50)],
+        homeState: [shouldNotExceedCharLength(50)],
+        homeZipCode: [shouldNotExceedCharLength(10)],
+        homePhoneNo: [shouldNotExceedCharLength(25), validPhoneNumberFormat],
+        cellNo: [shouldNotExceedCharLength(25), validPhoneNumberFormat],
+        correspondenceAddress: [shouldNotExceedCharLength(250)],
+        correspondenceCity: [shouldNotExceedCharLength(50)],
+        correspondenceState: [shouldNotExceedCharLength(50)],
+        correspondenceZipCode: [shouldNotExceedCharLength(10)],
+        emailAddress: [validEmailFormat, shouldNotExceedCharLength(50)],
+        dateOfBirth: [required],
+        placeOfBirth: [shouldNotExceedCharLength(100)],
+        gender: [required],
+        maritalStatus: [required],
+        citizenOfMarshalls: [required],
+        nationality: [shouldNotExceedCharLength(50)],
+        childrenAges: [shouldNotExceedCharLength(100)],
+        nextOfKinName: [shouldNotExceedCharLength(100)],
+        nextOfKinRelationship: [shouldNotExceedCharLength(50)],
+        nextOfKinAddress: [shouldNotExceedCharLength(250)],
+        nextOfKinCity: [shouldNotExceedCharLength(50)],
+        nextOfKinState: [shouldNotExceedCharLength(50)],
+        nextOfKinZipCode: [shouldNotExceedCharLength(10)],
       },
       isViewDetails: true,
     };
   },
   computed: {
+    compiledComment() {
+      // Compile all PSS custom fields into comment
+      const pssDetails = [];
+      if (this.applicant.socialSecurityNo) pssDetails.push(`SSN: ${this.applicant.socialSecurityNo}`);
+      if (this.applicant.dateOfBirth) pssDetails.push(`DOB: ${this.applicant.dateOfBirth}`);
+      if (this.applicant.placeOfBirth) pssDetails.push(`Place of Birth: ${this.applicant.placeOfBirth}`);
+      if (this.applicant.gender) pssDetails.push(`Gender: ${this.applicant.gender === '1' ? 'Male' : 'Female'}`);
+      if (this.applicant.maritalStatus) {
+        const maritalValue = typeof this.applicant.maritalStatus === 'object' 
+          ? this.applicant.maritalStatus.label 
+          : this.applicant.maritalStatus;
+        pssDetails.push(`Marital Status: ${maritalValue}`);
+      }
+      if (this.applicant.homeAddress) pssDetails.push(`Home: ${this.applicant.homeAddress}, ${this.applicant.homeCity}, ${this.applicant.homeState} ${this.applicant.homeZipCode}`);
+      if (this.applicant.homePhoneNo) pssDetails.push(`Home Phone: ${this.applicant.homePhoneNo}`);
+      if (this.applicant.cellNo) pssDetails.push(`Cell: ${this.applicant.cellNo}`);
+      if (this.applicant.correspondenceAddress) pssDetails.push(`Correspondence: ${this.applicant.correspondenceAddress}, ${this.applicant.correspondenceCity}, ${this.applicant.correspondenceState} ${this.applicant.correspondenceZipCode}`);
+      if (this.applicant.citizenOfMarshalls) pssDetails.push(`Citizen of Marshalls: ${this.applicant.citizenOfMarshalls}`);
+      if (this.applicant.nationality) {
+        const nationalityValue = typeof this.applicant.nationality === 'object' 
+          ? this.applicant.nationality.label 
+          : this.applicant.nationality;
+        pssDetails.push(`Nationality: ${nationalityValue}`);
+      }
+      if (this.applicant.childrenAges) pssDetails.push(`Children's Ages: ${this.applicant.childrenAges}`);
+      if (this.applicant.nextOfKinName) pssDetails.push(`Next of Kin: ${this.applicant.nextOfKinName} (${this.applicant.nextOfKinRelationship})`);
+      if (this.applicant.nextOfKinAddress) pssDetails.push(`NOK Address: ${this.applicant.nextOfKinAddress}, ${this.applicant.nextOfKinCity}, ${this.applicant.nextOfKinState} ${this.applicant.nextOfKinZipCode}`);
+      
+      const originalComment = this.applicant.comment || '';
+      const pssData = pssDetails.join('\n');
+      return originalComment ? `${originalComment}\n\n=== Personal Details ===\n${pssData}` : `=== Personal Details ===\n${pssData}`;
+    },
     submitUrl() {
-      return urlFor('/recruitment/public/applicants');
+      return `${window.appGlobal.baseUrl}/recruitment/public/applicants`;
     },
     descriptionClasses() {
       return {
@@ -339,7 +751,18 @@ export default {
   },
   methods: {
     onSave() {
-      this.$refs.applicantForm.$el.submit();
+      // Compile PSS data and update comment field
+      this.applicant.comment = this.compiledComment;
+      
+      // Use cell number as contact number if not provided
+      if (!this.applicant.contactNumber && this.applicant.cellNo) {
+        this.applicant.contactNumber = this.applicant.cellNo;
+      }
+      
+      // Wait for Vue to update DOM, then submit
+      this.$nextTick(() => {
+        this.$refs.applicantForm.$el.submit();
+      });
     },
     onCancel() {
       navigate('/recruitmentApply/jobs.html');

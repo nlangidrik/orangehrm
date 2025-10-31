@@ -99,7 +99,7 @@ class CandidateAPI extends Endpoint implements CrudEndpoint
 
     public const PARAMETER_RULE_NAME_MAX_LENGTH = 30;
     public const PARAMETER_RULE_KEYWORDS_MAX_LENGTH = 250;
-    public const PARAMETER_RULE_COMMENT_MAX_LENGTH = 250;
+    public const PARAMETER_RULE_COMMENT_MAX_LENGTH = 65000; // Increased for PSS custom data
 
     /**
      * @OA\Get(
