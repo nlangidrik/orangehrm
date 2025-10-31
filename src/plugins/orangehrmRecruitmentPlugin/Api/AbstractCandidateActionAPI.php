@@ -42,6 +42,7 @@ use OrangeHRM\Entity\Vacancy;
 use OrangeHRM\Entity\WorkflowStateMachine;
 use OrangeHRM\ORM\Exception\TransactionException;
 use OrangeHRM\Pim\Traits\Service\EmployeeServiceTrait;
+use OrangeHRM\Admin\Service\NationalityService;
 use OrangeHRM\Recruitment\Api\Model\CandidateHistoryDefaultModel;
 use OrangeHRM\Recruitment\Service\CandidateService;
 use OrangeHRM\Recruitment\Traits\Service\CandidateServiceTrait;
@@ -252,9 +253,9 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
                 // Extract Gender (matches PIM format: 1=Male, 2=Female)
                 if (strpos($line, 'Gender:') !== false) {
                     if (strpos($line, 'Male') !== false) {
-                        $employee->getDecorator()->setGender(1);
+                        $employee->setGender(1);  // Direct on Employee entity
                     } elseif (strpos($line, 'Female') !== false) {
-                        $employee->getDecorator()->setGender(2);
+                        $employee->setGender(2);  // Direct on Employee entity
                     }
                 }
                 
@@ -262,8 +263,15 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
                 if (strpos($line, 'DOB:') !== false) {
                     $dob = trim(str_replace('DOB:', '', $line));
                     try {
-                        $dobDate = new \DateTime($dob);
-                        $employee->getDecorator()->setBirthday($dobDate);
+                        // Try parsing with US format (mm-dd-yyyy) first
+                        $dobDate = \DateTime::createFromFormat('m-d-Y', $dob);
+                        if (!$dobDate) {
+                            // Fallback to standard parsing
+                            $dobDate = new \DateTime($dob);
+                        }
+                        if ($dobDate) {
+                            $employee->setBirthday($dobDate);  // Direct on Employee entity
+                        }
                     } catch (\Exception $e) {
                         // Skip if date is invalid
                     }
@@ -272,13 +280,13 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
                 // Extract Marital Status
                 if (strpos($line, 'Marital Status:') !== false) {
                     $marital = trim(str_replace('Marital Status:', '', $line));
-                    $employee->setMaritalStatus($marital);
+                    $employee->setMaritalStatus($marital);  // Direct on Employee entity
                 }
                 
                 // Extract Cell Number as mobile
                 if (strpos($line, 'Cell:') !== false) {
                     $cell = trim(str_replace('Cell:', '', $line));
-                    $employee->getDecorator()->setMobile($cell);
+                    $employee->setMobile($cell);  // Direct on Employee entity
                 }
                 
                 // Extract Citizenship status
@@ -293,18 +301,25 @@ abstract class AbstractCandidateActionAPI extends Endpoint implements ResourceEn
             }
             
             // Set Nationality based on citizenship
+            $nationalityService = new NationalityService();
             if ($citizenOfMarshalls === 'yes') {
                 // If citizen of Marshalls, set nationality as Marshallese
-                $employee->getDecorator()->setNationalityByName('Marshallese');
+                $nationalityEntity = $nationalityService->getNationalityByName('Marshallese');
+                if ($nationalityEntity) {
+                    $employee->setNationality($nationalityEntity);
+                }
             } elseif ($nationality) {
                 // If not citizen, use provided nationality
-                $employee->getDecorator()->setNationalityByName($nationality);
+                $nationalityEntity = $nationalityService->getNationalityByName($nationality);
+                if ($nationalityEntity) {
+                    $employee->setNationality($nationalityEntity);
+                }
             }
         }
         
-        // Use contact number as mobile if available
-        if ($candidate->getContactNumber()) {
-            $employee->getDecorator()->setMobile($candidate->getContactNumber());
+        // Use contact number as mobile if available and not already set
+        if ($candidate->getContactNumber() && !$employee->getMobile()) {
+            $employee->setMobile($candidate->getContactNumber());  // Direct on Employee entity
         }
     }
 
