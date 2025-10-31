@@ -40,8 +40,9 @@ services:
       - DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
       - DB_USER=${MYSQL_USER:-orangehrm}
       - DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
-    volumes:
-      - orangehrm_data:/var/www/html
+    # Volume removed - using files baked into Docker image instead
+    # volumes:
+    #   - orangehrm_data:/var/www/html
     ports:
       - "8080:80"  # Accessible on network for Nginx server to proxy
     networks:
@@ -61,8 +62,7 @@ services:
 volumes:
   mysql_data:
     driver: local
-  orangehrm_data:
-    driver: local
+  # orangehrm_data removed - using built-in image files
   redis_data:
     driver: local
 
