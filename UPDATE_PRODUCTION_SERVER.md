@@ -17,6 +17,29 @@ Follow these steps to deploy the complete PSS application form to your productio
 
 ## 🔧 **Step-by-Step Update Process:**
 
+### **IMPORTANT: Merge to Main First (Do this ONCE on your local machine):**
+
+Before updating production, merge the feature branch to main on your local machine:
+
+```powershell
+# On your local Windows machine
+cd C:\Users\NewtonLangidrik\Documents\Cursor\HRM\orangehrm-3
+
+# Switch to main branch
+git checkout main
+
+# Pull latest main
+git pull origin main
+
+# Merge the feature branch
+git merge feature/complete-pss-application-form
+
+# Push to GitHub
+git push origin main
+```
+
+---
+
 ### **Step 1: SSH into Your Production Server**
 
 ```bash
@@ -34,47 +57,28 @@ cd /opt/orangehrm
 
 ---
 
-### **Step 3: Check Current Branch**
+### **Step 3: Ensure You're on Main Branch**
 
 ```bash
-git branch
-git status
-```
-
----
-
-### **Step 4: Fetch Latest Changes from GitHub**
-
-```bash
-# Fetch all branches from GitHub
-git fetch origin
-
-# View available branches
-git branch -r
-```
-
----
-
-### **Step 5: Switch to the New Feature Branch**
-
-```bash
-# Switch to the new branch with complete application form
-git checkout feature/complete-pss-application-form
-
-# Or pull if you're already on this branch
-git pull origin feature/complete-pss-application-form
-```
-
-**Alternative:** If you want to merge to main first:
-```bash
+# Switch to main branch
 git checkout main
-git merge feature/complete-pss-application-form
-git push origin main
+
+# Verify you're on main
+git branch
 ```
 
 ---
 
-### **Step 6: Stop Current Containers**
+### **Step 4: Pull Latest Changes from Main Branch**
+
+```bash
+# Pull the latest updates from main branch
+git pull origin main
+```
+
+---
+
+### **Step 5: Stop Current Containers**
 
 ```bash
 # Stop the running containers
@@ -86,7 +90,7 @@ docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx stop
 
 ---
 
-### **Step 7: Rebuild the OrangeHRM Image**
+### **Step 6: Rebuild the OrangeHRM Image**
 
 ```bash
 # Rebuild the container with updated code
@@ -102,7 +106,7 @@ This will:
 
 ---
 
-### **Step 8: Start the Containers**
+### **Step 7: Start the Containers**
 
 ```bash
 # Start all containers
@@ -114,7 +118,7 @@ docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx ps
 
 ---
 
-### **Step 9: Verify the Update**
+### **Step 8: Verify the Update**
 
 ```bash
 # Check application logs
@@ -126,7 +130,7 @@ curl -I http://localhost:8080
 
 ---
 
-### **Step 10: Test the Application**
+### **Step 9: Test the Application**
 
 1. Open your application URL (e.g., http://hrm.pss.edu.mh)
 2. Login with admin credentials
@@ -145,14 +149,25 @@ curl -I http://localhost:8080
 
 ## 🔄 **Quick Update Commands (All-in-One)**
 
-Copy and paste this entire block on your production server:
+**FIRST:** Merge to main on your local machine (do this once):
+
+```powershell
+# On your Windows machine
+cd C:\Users\NewtonLangidrik\Documents\Cursor\HRM\orangehrm-3
+git checkout main
+git pull origin main
+git merge feature/complete-pss-application-form
+git push origin main
+```
+
+**THEN:** Copy and paste this entire block on your production server:
 
 ```bash
 cd /opt/orangehrm
 
-# Fetch and checkout the new branch
-git fetch origin
-git checkout feature/complete-pss-application-form
+# Switch to main and pull latest
+git checkout main
+git pull origin main
 
 # Stop containers
 docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx down
