@@ -2,90 +2,135 @@
 
 ## ✅ **Changes Made to Application Form**
 
-I've added all the personal details fields from your PSS application form template:
+I've added all sections from your PSS application form template:
 
-### **New Fields Added:**
-
-#### **Personal Information:**
+### **Section 1: Personal Details**
 1. Social Security No.
 2. Date of Birth (required)
 3. Place of Birth
 4. Sex (Male/Female) - required
 5. Marital Status (Married, Widowed, Separated, Single, Divorced) - required
+6. Home Address (Address, City, State, Zip, Phone, Cell)
+7. Correspondence Address (Address, City, State, Zip)
+8. Citizen of Marshalls (Yes/No) - required
+9. If NO, Nationality
+10. Children's Ages
+11. Next of Kin (Name, Relationship, Address, City, State, Zip)
 
-#### **Home Address:**
-6. Home Address
-7. City
-8. Country/State  
-9. Zip Code
-10. Phone No.
-11. Cell No.
+### **Section 2: References**
+- 3 References (First Name, Last Name, Phone, Email)
 
-#### **Correspondence Address:**
-12. Correspondence Address
-13. City
-14. Country/State
-15. Zip Code
+### **Section 3: Training/Workshops**
+- 4 Training entries (Course Title, From, To, Location)
 
-#### **Citizenship:**
-16. Citizen of Marshalls (Yes/No) - required
-17. If NO, Nationality
+### **Section 4: Formal Education**
+- High Schools (3 entries): School Name, From, To, Highest Grade/Diploma
+- Colleges/Universities (3 entries): College/University, From, To, Major, Degree/Credit Hours
 
-#### **Family Information:**
-18. Children's Ages
+### **Section 5: Hobbies, Sports & Special Skills** ✨
+- 4 rows for Hobbies, Sports or Special Interests
+- 4 rows for Special Skills
 
-#### **Next of Kin:**
-19. Next of Kin Name
-20. Relationship
-21. Address
-22. City
-23. Country/State
-24. Zip Code
+### **Section 6: Details of Employment** ✨
+- 7 Employment entries with:
+  - Employer
+  - From
+  - To
+  - Job Title
+  - Salary
+  - Reason for Leaving
+
+### **Section 7: Supporting Documents** ✨
+- Resume/CV Upload (Required)
+- Reference Letter 1 (Required)
+- Reference Letter 2 (Required)
+- Valid Driver License or Passport (Required)
+- Degree(s) Upload (Required) - **Supports multiple files** 🎓
+- Health Clearance (Required)
+- Criminal Clearance (Required)
+- Certificate(s) Upload (Optional) - **Supports multiple files** 📜
+- RMI Social Security Card (Optional)
+- Accepts PDF, DOC, DOCX formats
+- Maximum file size configurable per file
 
 ---
 
 ## 📁 **Files Modified:**
 
 - `src/client/src/orangehrmRecruitmentPlugin/pages/ApplyJobVacancy.vue`
-  - Added 25 new fields to the applicant model
+  - Added all 7 sections from PSS application form
+  - Added 100+ fields to the applicant model
   - Added validation rules for all fields
   - Added form fields in the template
+  - Data is compiled and saved in the applicant's comments field
 
 ---
 
 ## 🔧 **To Apply Changes (Requires Frontend Rebuild):**
 
-### **Option 1: Rebuild Frontend (Production)**
+### **🚀 Quick Rebuild (Recommended)**
 
-On your production server:
+Rebuild and restart the Docker container with the updated code:
 
-```bash
-cd /opt/orangehrm
+```powershell
+cd C:\Users\NewtonLangidrik\Documents\Cursor\HRM\orangehrm-3
 
-# Pull latest changes
-git pull origin docker-setup
+# Stop the current containers
+docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx down
 
-# Install Node.js and Yarn
-sudo apt install -y nodejs npm
-sudo npm install -g yarn
+# Rebuild the OrangeHRM image with updated code
+docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx build --no-cache orangehrm
 
-# Build frontend
-cd src/client
+# Start the containers again
+docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx up -d
+```
+
+The rebuild process will:
+1. Install all dependencies
+2. Build the main app frontend (including your custom application form)
+3. Build the installer frontend
+4. Create a new Docker image with all changes
+
+**Expected time:** 5-10 minutes depending on your system
+
+---
+
+### **✅ Verify Changes**
+
+After rebuilding:
+1. Open http://localhost:8080 in your browser
+2. Navigate to Recruitment → Vacancies
+3. Create a test vacancy or open an existing one
+4. Click "Apply" and you should see all 7 sections:
+   - Section 1: Personal Details
+   - Section 2: References (3 entries)
+   - Section 3: Training/Workshops (4 entries)
+   - Section 4: Formal Education (High Schools & Colleges)
+   - Section 5: Hobbies, Sports & Special Skills
+   - Section 6: Details of Employment (7 rows)
+   - Section 7: Supporting Documents (7 Required + 2 Optional, with multi-file support)
+
+---
+
+### **📝 Alternative: Manual Frontend Build**
+
+If you prefer to build the frontend separately:
+
+```powershell
+# Enter the running container
+docker exec -it orangehrm_app bash
+
+# Inside the container:
+cd /var/www/html/src/client
 yarn install
 yarn build
 
-# Restart Docker
-cd /opt/orangehrm
-docker compose -f docker-compose.no-nginx.yml restart orangehrm
+# Exit container
+exit
+
+# Restart the app
+docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx restart orangehrm
 ```
-
-### **Option 2: Wait for Pre-built Version**
-
-The changes are committed to your GitHub repo. When OrangeHRM releases an updated version or you rebuild the image, the changes will be included.
-
-### **Option 3: Use OrangeHRM Starter Advanced**
-
-Consider upgrading to OrangeHRM Advanced/Pro which allows custom form fields through the admin panel without code changes.
 
 ---
 

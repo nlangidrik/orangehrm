@@ -1015,6 +1015,628 @@
             </oxd-grid>
           </oxd-form-row>
 
+          <!-- Hobbies and Skills Section -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-text class="orangehrm-applicant-consent" tag="h6">
+              5. DETAILS OF HOBBIES, SPORTS OR SPECIAL INTERESTS / SPECIAL SKILLS:
+            </oxd-text>
+          </oxd-form-row>
+
+          <!-- Hobbies and Skills Rows -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby1"
+                  name="hobby1"
+                  label="Hobbies, Sports or Special Interests"
+                  placeholder="Type here"
+                  :rules="rules.hobby1"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill1"
+                  name="skill1"
+                  label="Special Skills"
+                  placeholder="Type here"
+                  :rules="rules.skill1"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby2"
+                  name="hobby2"
+                  placeholder="Type here"
+                  :rules="rules.hobby2"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill2"
+                  name="skill2"
+                  placeholder="Type here"
+                  :rules="rules.skill2"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby3"
+                  name="hobby3"
+                  placeholder="Type here"
+                  :rules="rules.hobby3"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill3"
+                  name="skill3"
+                  placeholder="Type here"
+                  :rules="rules.skill3"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby4"
+                  name="hobby4"
+                  placeholder="Type here"
+                  :rules="rules.hobby4"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill4"
+                  name="skill4"
+                  placeholder="Type here"
+                  :rules="rules.skill4"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Hobbies and Skills Section -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-text class="orangehrm-applicant-consent" tag="h6">
+              5. DETAILS OF HOBBIES, SPORTS OR SPECIAL INTERESTS / SPECIAL SKILLS:
+            </oxd-text>
+          </oxd-form-row>
+
+          <!-- Hobbies and Skills Rows -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby1"
+                  name="hobby1"
+                  label="Hobbies, Sports or Special Interests"
+                  placeholder="Type here"
+                  :rules="rules.hobby1"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill1"
+                  name="skill1"
+                  label="Special Skills"
+                  placeholder="Type here"
+                  :rules="rules.skill1"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby2"
+                  name="hobby2"
+                  placeholder="Type here"
+                  :rules="rules.hobby2"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill2"
+                  name="skill2"
+                  placeholder="Type here"
+                  :rules="rules.skill2"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby3"
+                  name="hobby3"
+                  placeholder="Type here"
+                  :rules="rules.hobby3"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill3"
+                  name="skill3"
+                  placeholder="Type here"
+                  :rules="rules.skill3"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="2" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.hobby4"
+                  name="hobby4"
+                  placeholder="Type here"
+                  :rules="rules.hobby4"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.skill4"
+                  name="skill4"
+                  placeholder="Type here"
+                  :rules="rules.skill4"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment Section -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-text class="orangehrm-applicant-consent" tag="h6">
+              6. DETAILS OF EMPLOYMENT:
+            </oxd-text>
+          </oxd-form-row>
+
+          <!-- Employment 1 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment1Employer"
+                  name="employment1Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment1Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment1From"
+                  name="employment1From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment1From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment1To"
+                  name="employment1To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment1To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment1JobTitle"
+                  name="employment1JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment1JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment1Salary"
+                  name="employment1Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment1Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment1Reason"
+                  name="employment1Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment1Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment 2 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment2Employer"
+                  name="employment2Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment2Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment2From"
+                  name="employment2From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment2From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment2To"
+                  name="employment2To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment2To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment2JobTitle"
+                  name="employment2JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment2JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment2Salary"
+                  name="employment2Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment2Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment2Reason"
+                  name="employment2Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment2Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment 3 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment3Employer"
+                  name="employment3Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment3Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment3From"
+                  name="employment3From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment3From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment3To"
+                  name="employment3To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment3To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment3JobTitle"
+                  name="employment3JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment3JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment3Salary"
+                  name="employment3Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment3Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment3Reason"
+                  name="employment3Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment3Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment 4 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment4Employer"
+                  name="employment4Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment4Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment4From"
+                  name="employment4From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment4From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment4To"
+                  name="employment4To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment4To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment4JobTitle"
+                  name="employment4JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment4JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment4Salary"
+                  name="employment4Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment4Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment4Reason"
+                  name="employment4Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment4Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment 5 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment5Employer"
+                  name="employment5Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment5Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment5From"
+                  name="employment5From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment5From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment5To"
+                  name="employment5To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment5To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment5JobTitle"
+                  name="employment5JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment5JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment5Salary"
+                  name="employment5Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment5Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment5Reason"
+                  name="employment5Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment5Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment 6 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment6Employer"
+                  name="employment6Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment6Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment6From"
+                  name="employment6From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment6From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment6To"
+                  name="employment6To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment6To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment6JobTitle"
+                  name="employment6JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment6JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment6Salary"
+                  name="employment6Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment6Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment6Reason"
+                  name="employment6Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment6Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Employment 7 -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="6" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment7Employer"
+                  name="employment7Employer"
+                  label="Employer"
+                  placeholder="Type here"
+                  :rules="rules.employment7Employer"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment7From"
+                  name="employment7From"
+                  label="From"
+                  placeholder="Type here"
+                  :rules="rules.employment7From"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment7To"
+                  name="employment7To"
+                  label="To"
+                  placeholder="Type here"
+                  :rules="rules.employment7To"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment7JobTitle"
+                  name="employment7JobTitle"
+                  label="Job Title"
+                  placeholder="Type here"
+                  :rules="rules.employment7JobTitle"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment7Salary"
+                  name="employment7Salary"
+                  label="Salary"
+                  placeholder="Type here"
+                  :rules="rules.employment7Salary"
+                />
+              </oxd-grid-item>
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.employment7Reason"
+                  name="employment7Reason"
+                  label="Reason for Leaving"
+                  placeholder="Type here"
+                  :rules="rules.employment7Reason"
+                />
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Supporting Documents Section -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-text class="orangehrm-applicant-consent" tag="h6">
+              7. SUPPORTING DOCUMENTS:
+            </oxd-text>
+          </oxd-form-row>
+
           <!-- Contact Number (original field kept for compatibility) -->
           <oxd-form-row class="orangehrm-applicant-container-row" style="display:none;">
             <oxd-grid :cols="3" class="orangehrm-full-width-grid">
@@ -1029,7 +1651,9 @@
               </oxd-grid-item>
             </oxd-grid>
           </oxd-form-row>
-          <oxd-form-row>
+
+          <!-- Resume Upload -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
             <oxd-grid :cols="3" class="orangehrm-full-width-grid">
               <oxd-grid-item>
                 <oxd-input-field
@@ -1039,6 +1663,198 @@
                   :label="$t('recruitment.resume')"
                   :button-label="$t('general.browse')"
                   :rules="rules.resume"
+                  required
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Reference Letter 1 Upload -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.referenceLetter1"
+                  name="referenceLetter1"
+                  type="file"
+                  label="Reference Letter 1"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.referenceLetter1"
+                  required
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Reference Letter 2 Upload -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.referenceLetter2"
+                  name="referenceLetter2"
+                  type="file"
+                  label="Reference Letter 2"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.referenceLetter2"
+                  required
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Driver License or Passport Upload -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.driverLicenseOrPassport"
+                  name="driverLicenseOrPassport"
+                  type="file"
+                  label="Valid Driver License or Passport"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.driverLicenseOrPassport"
+                  required
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- RMI Social Security Card Upload (Optional) -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.rmiSocialSecurityCard"
+                  name="rmiSocialSecurityCard"
+                  type="file"
+                  label="RMI Social Security Card"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.rmiSocialSecurityCard"
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Degree(s) Upload (Multiple Files Allowed) -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.degrees"
+                  name="degrees"
+                  type="file"
+                  label="Degree(s)"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.degrees"
+                  multiple
+                  required
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  You can select multiple degree files. {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Certificate(s) Upload (Multiple Files Allowed - Optional) -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.certificates"
+                  name="certificates"
+                  type="file"
+                  label="Certificate(s)"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.certificates"
+                  multiple
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  You can select multiple certificate files. {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Health Clearance Upload -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.healthClearance"
+                  name="healthClearance"
+                  type="file"
+                  label="Health Clearance"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.healthClearance"
+                  required
+                />
+                <oxd-text class="orangehrm-input-hint" tag="p">
+                  {{
+                    $t('general.accept_custom_format_file_up_to_n_mb', {
+                      count: formattedFileSize,
+                    })
+                  }}
+                </oxd-text>
+              </oxd-grid-item>
+            </oxd-grid>
+          </oxd-form-row>
+
+          <!-- Criminal Clearance Upload -->
+          <oxd-form-row class="orangehrm-applicant-container-row">
+            <oxd-grid :cols="3" class="orangehrm-full-width-grid">
+              <oxd-grid-item>
+                <oxd-input-field
+                  v-model="applicant.criminalClearance"
+                  name="criminalClearance"
+                  type="file"
+                  label="Criminal Clearance"
+                  :button-label="$t('general.browse')"
+                  :rules="rules.criminalClearance"
                   required
                 />
                 <oxd-text class="orangehrm-input-hint" tag="p">
@@ -1148,6 +1964,14 @@ const applicantModel = {
   email: '',
   consentToKeepData: false,
   resume: null,
+  referenceLetter1: null,
+  referenceLetter2: null,
+  driverLicenseOrPassport: null,
+  rmiSocialSecurityCard: null,
+  degrees: null,
+  certificates: null,
+  healthClearance: null,
+  criminalClearance: null,
   keywords: null,
   comment: null,
   // Additional Personal Details for PSS
@@ -1235,6 +2059,58 @@ const applicantModel = {
   college3To: '',
   college3Major: '',
   college3Degree: '',
+  // Employment History (7 entries)
+  employment1Employer: '',
+  employment1From: '',
+  employment1To: '',
+  employment1JobTitle: '',
+  employment1Salary: '',
+  employment1Reason: '',
+  employment2Employer: '',
+  employment2From: '',
+  employment2To: '',
+  employment2JobTitle: '',
+  employment2Salary: '',
+  employment2Reason: '',
+  employment3Employer: '',
+  employment3From: '',
+  employment3To: '',
+  employment3JobTitle: '',
+  employment3Salary: '',
+  employment3Reason: '',
+  employment4Employer: '',
+  employment4From: '',
+  employment4To: '',
+  employment4JobTitle: '',
+  employment4Salary: '',
+  employment4Reason: '',
+  employment5Employer: '',
+  employment5From: '',
+  employment5To: '',
+  employment5JobTitle: '',
+  employment5Salary: '',
+  employment5Reason: '',
+  employment6Employer: '',
+  employment6From: '',
+  employment6To: '',
+  employment6JobTitle: '',
+  employment6Salary: '',
+  employment6Reason: '',
+  employment7Employer: '',
+  employment7From: '',
+  employment7To: '',
+  employment7JobTitle: '',
+  employment7Salary: '',
+  employment7Reason: '',
+  // Hobbies and Special Skills (4 entries each)
+  hobby1: '',
+  hobby2: '',
+  hobby3: '',
+  hobby4: '',
+  skill1: '',
+  skill2: '',
+  skill3: '',
+  skill4: '',
 };
 
 export default {
@@ -1331,6 +2207,44 @@ export default {
           maxFileSize(this.maxFileSize),
           validFileTypes(this.allowedFileTypes),
         ],
+        referenceLetter1: [
+          required,
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        referenceLetter2: [
+          required,
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        driverLicenseOrPassport: [
+          required,
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        rmiSocialSecurityCard: [
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        degrees: [
+          required,
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        certificates: [
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        healthClearance: [
+          required,
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
+        criminalClearance: [
+          required,
+          maxFileSize(this.maxFileSize),
+          validFileTypes(this.allowedFileTypes),
+        ],
         comment: [], // No length limit - contains PSS custom data
         keywords: [shouldNotExceedCharLength(250)],
         contactNumber: [shouldNotExceedCharLength(25), validPhoneNumberFormat],
@@ -1420,6 +2334,58 @@ export default {
         college3To: [shouldNotExceedCharLength(20)],
         college3Major: [shouldNotExceedCharLength(50)],
         college3Degree: [shouldNotExceedCharLength(100)],
+        // Employment validation
+        employment1Employer: [shouldNotExceedCharLength(100)],
+        employment1From: [shouldNotExceedCharLength(20)],
+        employment1To: [shouldNotExceedCharLength(20)],
+        employment1JobTitle: [shouldNotExceedCharLength(100)],
+        employment1Salary: [shouldNotExceedCharLength(50)],
+        employment1Reason: [shouldNotExceedCharLength(200)],
+        employment2Employer: [shouldNotExceedCharLength(100)],
+        employment2From: [shouldNotExceedCharLength(20)],
+        employment2To: [shouldNotExceedCharLength(20)],
+        employment2JobTitle: [shouldNotExceedCharLength(100)],
+        employment2Salary: [shouldNotExceedCharLength(50)],
+        employment2Reason: [shouldNotExceedCharLength(200)],
+        employment3Employer: [shouldNotExceedCharLength(100)],
+        employment3From: [shouldNotExceedCharLength(20)],
+        employment3To: [shouldNotExceedCharLength(20)],
+        employment3JobTitle: [shouldNotExceedCharLength(100)],
+        employment3Salary: [shouldNotExceedCharLength(50)],
+        employment3Reason: [shouldNotExceedCharLength(200)],
+        employment4Employer: [shouldNotExceedCharLength(100)],
+        employment4From: [shouldNotExceedCharLength(20)],
+        employment4To: [shouldNotExceedCharLength(20)],
+        employment4JobTitle: [shouldNotExceedCharLength(100)],
+        employment4Salary: [shouldNotExceedCharLength(50)],
+        employment4Reason: [shouldNotExceedCharLength(200)],
+        employment5Employer: [shouldNotExceedCharLength(100)],
+        employment5From: [shouldNotExceedCharLength(20)],
+        employment5To: [shouldNotExceedCharLength(20)],
+        employment5JobTitle: [shouldNotExceedCharLength(100)],
+        employment5Salary: [shouldNotExceedCharLength(50)],
+        employment5Reason: [shouldNotExceedCharLength(200)],
+        employment6Employer: [shouldNotExceedCharLength(100)],
+        employment6From: [shouldNotExceedCharLength(20)],
+        employment6To: [shouldNotExceedCharLength(20)],
+        employment6JobTitle: [shouldNotExceedCharLength(100)],
+        employment6Salary: [shouldNotExceedCharLength(50)],
+        employment6Reason: [shouldNotExceedCharLength(200)],
+        employment7Employer: [shouldNotExceedCharLength(100)],
+        employment7From: [shouldNotExceedCharLength(20)],
+        employment7To: [shouldNotExceedCharLength(20)],
+        employment7JobTitle: [shouldNotExceedCharLength(100)],
+        employment7Salary: [shouldNotExceedCharLength(50)],
+        employment7Reason: [shouldNotExceedCharLength(200)],
+        // Hobbies and Skills validation
+        hobby1: [shouldNotExceedCharLength(200)],
+        hobby2: [shouldNotExceedCharLength(200)],
+        hobby3: [shouldNotExceedCharLength(200)],
+        hobby4: [shouldNotExceedCharLength(200)],
+        skill1: [shouldNotExceedCharLength(200)],
+        skill2: [shouldNotExceedCharLength(200)],
+        skill3: [shouldNotExceedCharLength(200)],
+        skill4: [shouldNotExceedCharLength(200)],
       },
       isViewDetails: true,
     };
@@ -1512,14 +2478,63 @@ export default {
         education.push(`College/University:\n${colleges.join('\n')}`);
       }
       
+      // Add Employment section
+      const employment = [];
+      if (this.applicant.employment1Employer) {
+        employment.push(`1. ${this.applicant.employment1Employer} | ${this.applicant.employment1From} - ${this.applicant.employment1To} | ${this.applicant.employment1JobTitle} | Salary: ${this.applicant.employment1Salary} | Reason: ${this.applicant.employment1Reason}`);
+      }
+      if (this.applicant.employment2Employer) {
+        employment.push(`2. ${this.applicant.employment2Employer} | ${this.applicant.employment2From} - ${this.applicant.employment2To} | ${this.applicant.employment2JobTitle} | Salary: ${this.applicant.employment2Salary} | Reason: ${this.applicant.employment2Reason}`);
+      }
+      if (this.applicant.employment3Employer) {
+        employment.push(`3. ${this.applicant.employment3Employer} | ${this.applicant.employment3From} - ${this.applicant.employment3To} | ${this.applicant.employment3JobTitle} | Salary: ${this.applicant.employment3Salary} | Reason: ${this.applicant.employment3Reason}`);
+      }
+      if (this.applicant.employment4Employer) {
+        employment.push(`4. ${this.applicant.employment4Employer} | ${this.applicant.employment4From} - ${this.applicant.employment4To} | ${this.applicant.employment4JobTitle} | Salary: ${this.applicant.employment4Salary} | Reason: ${this.applicant.employment4Reason}`);
+      }
+      if (this.applicant.employment5Employer) {
+        employment.push(`5. ${this.applicant.employment5Employer} | ${this.applicant.employment5From} - ${this.applicant.employment5To} | ${this.applicant.employment5JobTitle} | Salary: ${this.applicant.employment5Salary} | Reason: ${this.applicant.employment5Reason}`);
+      }
+      if (this.applicant.employment6Employer) {
+        employment.push(`6. ${this.applicant.employment6Employer} | ${this.applicant.employment6From} - ${this.applicant.employment6To} | ${this.applicant.employment6JobTitle} | Salary: ${this.applicant.employment6Salary} | Reason: ${this.applicant.employment6Reason}`);
+      }
+      if (this.applicant.employment7Employer) {
+        employment.push(`7. ${this.applicant.employment7Employer} | ${this.applicant.employment7From} - ${this.applicant.employment7To} | ${this.applicant.employment7JobTitle} | Salary: ${this.applicant.employment7Salary} | Reason: ${this.applicant.employment7Reason}`);
+      }
+      
+      // Add Hobbies and Skills section
+      const hobbiesSkills = [];
+      if (this.applicant.hobby1 || this.applicant.skill1) {
+        const hobbyPart = this.applicant.hobby1 ? `Hobby: ${this.applicant.hobby1}` : '';
+        const skillPart = this.applicant.skill1 ? `Skill: ${this.applicant.skill1}` : '';
+        hobbiesSkills.push(`${hobbyPart}${hobbyPart && skillPart ? ' | ' : ''}${skillPart}`);
+      }
+      if (this.applicant.hobby2 || this.applicant.skill2) {
+        const hobbyPart = this.applicant.hobby2 ? `Hobby: ${this.applicant.hobby2}` : '';
+        const skillPart = this.applicant.skill2 ? `Skill: ${this.applicant.skill2}` : '';
+        hobbiesSkills.push(`${hobbyPart}${hobbyPart && skillPart ? ' | ' : ''}${skillPart}`);
+      }
+      if (this.applicant.hobby3 || this.applicant.skill3) {
+        const hobbyPart = this.applicant.hobby3 ? `Hobby: ${this.applicant.hobby3}` : '';
+        const skillPart = this.applicant.skill3 ? `Skill: ${this.applicant.skill3}` : '';
+        hobbiesSkills.push(`${hobbyPart}${hobbyPart && skillPart ? ' | ' : ''}${skillPart}`);
+      }
+      if (this.applicant.hobby4 || this.applicant.skill4) {
+        const hobbyPart = this.applicant.hobby4 ? `Hobby: ${this.applicant.hobby4}` : '';
+        const skillPart = this.applicant.skill4 ? `Skill: ${this.applicant.skill4}` : '';
+        hobbiesSkills.push(`${hobbyPart}${hobbyPart && skillPart ? ' | ' : ''}${skillPart}`);
+      }
+      
       const originalComment = this.applicant.comment || '';
       const pssData = pssDetails.join('\n');
       const referencesData = references.length > 0 ? `\n\n=== References ===\n${references.join('\n')}` : '';
       const trainingData = training.length > 0 ? `\n\n=== Training/Workshops ===\n${training.join('\n')}` : '';
       const educationData = education.length > 0 ? `\n\n=== Education ===\n${education.join('\n\n')}` : '';
+      const employmentData = employment.length > 0 ? `\n\n=== Employment History ===\n${employment.join('\n')}` : '';
+      const hobbiesSkillsData = hobbiesSkills.length > 0 ? `\n\n=== Hobbies & Skills ===\n${hobbiesSkills.join('\n')}` : '';
       return originalComment 
-        ? `${originalComment}\n\n=== Personal Details ===\n${pssData}${referencesData}${trainingData}${educationData}` 
-        : `=== Personal Details ===\n${pssData}${referencesData}${trainingData}${educationData}`;
+        ? `${originalComment}\n\n=== Personal Details ===\n${pssData}${referencesData}${trainingData}${educationData}${employmentData}${hobbiesSkillsData}` 
+        : `=== Personal Details ===\n${pssData}${referencesData}${trainingData}${educationData}${employmentData}${hobbiesSkillsData}`;
     },
     submitUrl() {
       return `${window.appGlobal.baseUrl}/recruitment/public/applicants`;
