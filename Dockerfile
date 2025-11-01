@@ -76,6 +76,16 @@ COPY --chown=www-data:www-data . /var/www/html/
 # Set working directory
 WORKDIR /var/www/html
 
+# Install Composer for PHP dependencies
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install PHP dependencies with Composer
+RUN cd src && \
+	echo "Installing PHP Composer dependencies..." && \
+	composer install --no-dev --optimize-autoloader && \
+	echo "Composer dependencies installed!" && \
+	cd ..
+
 # Build Vue.js frontend with custom application form fields
 # Set CI=false to prevent build from failing on linting warnings
 ENV CI=false
