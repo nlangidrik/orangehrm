@@ -86,15 +86,26 @@ RUN cd src && \
 	echo "Composer dependencies installed!" && \
 	cd ..
 
-# Build Vue.js frontend with custom application form fields
+# Build Vue.js frontends with custom application form fields
 # Set CI=false to prevent build from failing on linting warnings
 ENV CI=false
+
+# Build main application frontend
 RUN cd src/client && \
-	echo "Installing frontend dependencies..." && \
+	echo "Installing main app frontend dependencies..." && \
 	yarn install --frozen-lockfile && \
-	echo "Building Vue.js frontend with custom application form..." && \
+	echo "Building main app Vue.js frontend with custom application form..." && \
 	yarn build --skip-plugins @vue/cli-plugin-eslint && \
-	echo "Frontend build completed successfully!" && \
+	echo "Main app frontend build completed!" && \
+	cd ../..
+
+# Build installer frontend
+RUN cd installer/client && \
+	echo "Installing installer frontend dependencies..." && \
+	yarn install --frozen-lockfile && \
+	echo "Building installer Vue.js frontend..." && \
+	yarn build --skip-plugins @vue/cli-plugin-eslint && \
+	echo "Installer frontend build completed!" && \
 	cd ../..
 
 # Set proper permissions for writable directories
