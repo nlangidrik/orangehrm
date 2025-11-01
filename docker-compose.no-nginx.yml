@@ -14,8 +14,9 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
-    ports:
-      - "127.0.0.1:3306:3306"  # Only accessible from localhost
+    # Ports removed - containers communicate via Docker network
+    # ports:
+    #   - "127.0.0.1:3306:3306"  # Only accessible from localhost
     networks:
       - orangehrm_network
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -39,8 +40,12 @@ services:
       - DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
       - DB_USER=${MYSQL_USER:-orangehrm}
       - DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
+    # Mount only config, cache, and log directories (not entire /var/www/html)
+    # This preserves our custom code while allowing persistent configuration
     volumes:
-      - orangehrm_data:/var/www/html
+      - orangehrm_config:/var/www/html/src/config
+      - orangehrm_cache:/var/www/html/src/cache
+      - orangehrm_log:/var/www/html/src/log
     ports:
       - "8080:80"  # Accessible on network for Nginx server to proxy
     networks:
@@ -60,7 +65,11 @@ services:
 volumes:
   mysql_data:
     driver: local
-  orangehrm_data:
+  orangehrm_config:
+    driver: local
+  orangehrm_cache:
+    driver: local
+  orangehrm_log:
     driver: local
   redis_data:
     driver: local

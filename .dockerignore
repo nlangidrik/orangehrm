@@ -1,0 +1,62 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Docker files
+Dockerfile
+Dockerfile.production
+docker-compose*.yml
+.dockerignore
+
+# Documentation
+*.md
+CHANGELOG.TXT
+LICENSE
+
+# Development tools
+devTools/
+
+# Node modules (will be installed fresh in container)
+**/node_modules/
+**/dist/
+
+# Cache and logs
+src/cache/*
+src/log/*
+!src/cache/.gitkeep
+!src/log/.gitkeep
+
+# Environment files (use mounted .env instead)
+.env
+.env.*
+!env.example
+!env.no-nginx.example
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# MySQL data
+mysql/
+
+# Build artifacts
+build/
+
+# Test files
+src/test/
+phpunit.xml
+
+# Nginx config (not needed in app container)
+nginx/
+
+# SSL certificates
+ssl/
+
