@@ -81,12 +81,19 @@ git pull origin main
 ### **Step 5: Stop Current Containers**
 
 ```bash
-# Stop the running containers
-docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx down
+# ⚠️ IMPORTANT: Use 'down' WITHOUT '-v' flag to KEEP database data
+# NEVER use 'down -v' unless you want to DELETE everything!
 
-# OR if you want to keep the database data:
-docker-compose -f docker-compose.no-nginx.yml --env-file env.no-nginx stop
+# Stop the running containers (KEEPS all data)
+docker compose -f docker-compose.no-nginx.yml --env-file env.no-nginx down
+
+# Database data persists in Docker volumes and will reconnect automatically
 ```
+
+**⚠️ CRITICAL WARNING:**
+- ❌ **NEVER use `docker compose down -v`** - This DELETES all database data!
+- ✅ **Always use `docker compose down`** - This KEEPS all data safe
+- ✅ Database is stored in Docker volumes and persists across container restarts
 
 ---
 
