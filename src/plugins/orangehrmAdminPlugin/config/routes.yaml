@@ -20,6 +20,20 @@ apiv2_admin_job_specification:
     _api: OrangeHRM\Admin\Api\JobSpecificationAPI
     _key: jobTitleId
 
+apiv2_admin_position:
+  path: /api/v2/admin/positions/{id}
+  controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
+  methods: [ GET, PUT ]
+  defaults:
+    _api: OrangeHRM\Admin\Api\PositionAPI
+
+apiv2_admin_positions:
+  path: /api/v2/admin/positions
+  controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
+  methods: [ GET, POST, DELETE ]
+  defaults:
+    _api: OrangeHRM\Admin\Api\PositionAPI
+
 apiv2_admin_job_category:
   path: /api/v2/admin/job-categories/{id}
   controller: OrangeHRM\Core\Controller\Rest\V2\GenericRestController::handle
@@ -392,6 +406,21 @@ save_job_title:
 edit_job_title:
   path: /admin/saveJobTitle/{id}
   controller: OrangeHRM\Admin\Controller\SaveJobTitleController::handle
+  methods: [ GET ]
+
+view_position_list:
+  path: /admin/viewPositionList
+  controller: OrangeHRM\Admin\Controller\PositionController::handle
+  methods: [ GET ]
+
+save_position:
+  path: /admin/savePosition
+  controller: OrangeHRM\Admin\Controller\SavePositionController::handle
+  methods: [ GET ]
+
+edit_position:
+  path: /admin/savePosition/{id}
+  controller: OrangeHRM\Admin\Controller\SavePositionController::handle
   methods: [ GET ]
 
 view_job_category:
