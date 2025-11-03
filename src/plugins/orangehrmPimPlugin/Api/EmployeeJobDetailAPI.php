@@ -39,6 +39,7 @@ class EmployeeJobDetailAPI extends Endpoint implements ResourceEndpoint
 
     public const PARAMETER_JOINED_DATE = 'joinedDate';
     public const PARAMETER_JOB_TITLE_ID = 'jobTitleId';
+    public const PARAMETER_POSITION_ID = 'positionId';
     public const PARAMETER_EMP_STATUS_ID = 'empStatusId';
     public const PARAMETER_JOB_CATEGORY_ID = 'jobCategoryId';
     public const PARAMETER_SUBUNIT_ID = 'subunitId';
@@ -108,6 +109,7 @@ class EmployeeJobDetailAPI extends Endpoint implements ResourceEndpoint
      *             type="object",
      *             @OA\Property(property="joinedDate", type="string", format="date"),
      *             @OA\Property(property="jobTitleId", type="integer"),
+     *             @OA\Property(property="positionId", type="integer"),
      *             @OA\Property(property="empStatusId", type="integer"),
      *             @OA\Property(property="jobCategoryId", type="integer"),
      *             @OA\Property(property="subunitId", type="integer"),
@@ -145,6 +147,10 @@ class EmployeeJobDetailAPI extends Endpoint implements ResourceEndpoint
             RequestParams::PARAM_TYPE_BODY,
             self::PARAMETER_JOB_TITLE_ID
         );
+        $positionId = $this->getRequestParams()->getIntOrNull(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_POSITION_ID
+        );
         $empStatusId = $this->getRequestParams()->getIntOrNull(
             RequestParams::PARAM_TYPE_BODY,
             self::PARAMETER_EMP_STATUS_ID
@@ -165,6 +171,7 @@ class EmployeeJobDetailAPI extends Endpoint implements ResourceEndpoint
         $currentJoinedDate = $employee->getJoinedDate();
         $employee->setJoinedDate($joinedDate);
         $employee->getDecorator()->setJobTitleById($jobTitleId);
+        $employee->getDecorator()->setPositionById($positionId);
         $employee->getDecorator()->setEmpStatusById($empStatusId);
         $employee->getDecorator()->setJobCategoryById($jobCategoryId);
         $employee->getDecorator()->setSubunitById($subunitId);
@@ -198,6 +205,12 @@ class EmployeeJobDetailAPI extends Endpoint implements ResourceEndpoint
             $this->getValidationDecorator()->notRequiredParamRule(
                 new ParamRule(
                     self::PARAMETER_JOB_TITLE_ID,
+                    new Rule(Rules::POSITIVE)
+                )
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(
+                    self::PARAMETER_POSITION_ID,
                     new Rule(Rules::POSITIVE)
                 )
             ),

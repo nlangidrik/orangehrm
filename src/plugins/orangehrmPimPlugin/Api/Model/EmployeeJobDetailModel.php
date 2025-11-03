@@ -37,6 +37,11 @@ use OrangeHRM\Entity\Employee;
  *         @OA\Property(property="id", type="integer"),
  *         @OA\Property(property="filename", type="string")
  *     ),
+ *     @OA\Property(property="position", type="object",
+ *         @OA\Property(property="id", type="integer"),
+ *         @OA\Property(property="name", type="string"),
+ *         @OA\Property(property="isDeleted", type="boolean")
+ *     ),
  *     @OA\Property(property="empStatus", type="object",
  *         @OA\Property(property="id", type="integer"),
  *         @OA\Property(property="name", type="string")
@@ -76,6 +81,9 @@ class EmployeeJobDetailModel implements Normalizable
                 ['getJobTitle', 'isDeleted'],
                 ['getJobTitle', 'getJobSpecificationAttachment', 'getId'],
                 ['getJobTitle', 'getJobSpecificationAttachment', 'getFileName'],
+                ['getPosition', 'getId'],
+                ['getPosition', 'getName'],
+                ['getPosition', 'isDeleted'],
                 ['getEmpStatus', 'getId'],
                 ['getEmpStatus', 'getName'],
                 ['getJobCategory', 'getId'],
@@ -98,6 +106,9 @@ class EmployeeJobDetailModel implements Normalizable
                 ['jobTitle', 'isDeleted'],
                 ['jobSpecificationAttachment', 'id'],
                 ['jobSpecificationAttachment', 'filename'],
+                ['position', 'id'],
+                ['position', 'name'],
+                ['position', 'isDeleted'],
                 ['empStatus', 'id'],
                 ['empStatus', 'name'],
                 ['jobCategory', 'id'],
