@@ -54,7 +54,7 @@
                 v-model="job.positionId"
                 type="select"
                 label="Position"
-                :options="positions"
+                :options="normalizedPositions"
                 :disabled="!hasUpdatePermissions"
               />
             </oxd-grid-item>
@@ -360,6 +360,16 @@ export default {
         };
       });
     },
+    normalizedPositions() {
+      return this.positions.map((position) => {
+        return {
+          id: position.id,
+          label: position?.deleted
+            ? position.label + this.$t('general.deleted')
+            : position.label,
+        };
+      });
+    },
     terminationDate() {
       return this.termination?.date
         ? formatDate(parseDate(this.termination.date), this.jsDateFormat, {
@@ -489,7 +499,7 @@ export default {
       this.job.jobTitleId = this.normalizedJobTitles.find(
         (item) => item.id === data.jobTitle?.id,
       );
-      this.job.positionId = this.positions.find(
+      this.job.positionId = this.normalizedPositions.find(
         (item) => item.id === data.position?.id,
       );
       this.job.jobCategoryId = this.jobCategories.find(
