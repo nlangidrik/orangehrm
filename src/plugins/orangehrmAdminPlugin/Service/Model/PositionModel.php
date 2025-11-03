@@ -42,7 +42,7 @@ class PositionModel implements Normalizable
         $this->setAttributeNames(
             [
                 'id',
-                'name',
+                'label',
                 'deleted',
             ]
         );
