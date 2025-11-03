@@ -42,10 +42,15 @@ services:
       - OHRM_APP_ENV=production
       - OHRM_APP_DEBUG=false
     volumes:
-      - orangehrm_data:/var/www/html
-      - ./src/config:/var/www/html/src/config
-      - ./src/cache:/var/www/html/src/cache
-      - ./src/log:/var/www/html/src/log
+      # Persist configuration (this is where Conf.php gets created after installation)
+      - orangehrm_config:/var/www/html/lib/confs
+      # Persist cache and logs
+      - orangehrm_cache:/var/www/html/src/cache
+      - orangehrm_log:/var/www/html/src/log
+      # Persist uploaded files and user data
+      - orangehrm_data:/var/www/html/src/plugins/orangehrmCorePlugin/data
+    ports:
+      - "0.0.0.0:8080:80"  # Expose on all interfaces for external nginx access
     networks:
       - orangehrm_network
     healthcheck:
@@ -55,28 +60,27 @@ services:
       retries: 3
       start_period: 60s
 
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: orangehrm_nginx
-    restart: unless-stopped
-    depends_on:
-      - orangehrm
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./ssl:/etc/nginx/ssl
-      - orangehrm_data:/var/www/html:ro
-    networks:
-      - orangehrm_network
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # Nginx Reverse Proxy - DISABLED (using external nginx)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: orangehrm_nginx
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - orangehrm
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #     - ./nginx/conf.d:/etc/nginx/conf.d
+  #     - ./ssl:/etc/nginx/ssl
+  #   networks:
+  #     - orangehrm_network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   # Redis for Session Storage
   redis:
@@ -127,6 +131,12 @@ services:
 
 volumes:
   mysql_data:
+    driver: local
+  orangehrm_config:
+    driver: local
+  orangehrm_cache:
+    driver: local
+  orangehrm_log:
     driver: local
   orangehrm_data:
     driver: local

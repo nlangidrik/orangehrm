@@ -39,7 +39,13 @@ services:
       - DB_USER=orangehrm
       - DB_PASSWORD=orangehrm123
     volumes:
-      - orangehrm_data:/var/www/html
+      # Persist configuration (this is where Conf.php gets created after installation)
+      - orangehrm_config:/var/www/html/lib/confs
+      # Persist cache and logs
+      - orangehrm_cache:/var/www/html/src/cache
+      - orangehrm_log:/var/www/html/src/log
+      # Persist uploaded files and user data
+      - orangehrm_data:/var/www/html/src/plugins/orangehrmCorePlugin/data
     ports:
       - "8080:80"
     networks:
@@ -47,6 +53,12 @@ services:
 
 volumes:
   mysql_data:
+    driver: local
+  orangehrm_config:
+    driver: local
+  orangehrm_cache:
+    driver: local
+  orangehrm_log:
     driver: local
   orangehrm_data:
     driver: local

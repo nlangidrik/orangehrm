@@ -1,0 +1,291 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  ORANGEHRM DOCKER PERSISTENCE SOLUTION                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+THE PROBLEM:
+═════════════
+
+    ┌─────────────┐
+    │  Developer  │
+    └──────┬──────┘
+           │
+           ├─→ "docker compose down"
+           │
+           ├─→ "docker compose up -d --build"
+           │
+           ↓
+    ┌──────────────────────────────────┐
+    │  ❌ Setup wizard appears AGAIN    │
+    │  ❌ Database data is GONE         │
+    │  ❌ Configuration is LOST         │
+    │  ❌ Must reconfigure everything   │
+    └──────────────────────────────────┘
+
+WHY IT HAPPENED:
+════════════════
+
+    Docker Volume Conflict:
+    
+    volumes:
+      - orangehrm_data:/var/www/html          ← Mounts ENTIRE app directory
+      - ./src/config:/var/www/html/src/config ← This gets OVERWRITTEN!
+      
+    Result: Configuration lost on every rebuild
+
+
+THE SOLUTION:
+═════════════
+
+    ┌─────────────┐
+    │  Developer  │
+    └──────┬──────┘
+           │
+           ├─→ "docker compose down"
+           │
+           ├─→ "docker compose up -d --build"
+           │
+           ↓
+    ┌──────────────────────────────────┐
+    │  ✅ No wizard (goes to login)     │
+    │  ✅ Database data PERSISTS        │
+    │  ✅ Configuration SAVED           │
+    │  ✅ Everything works!             │
+    └──────────────────────────────────┘
+
+HOW IT WORKS NOW:
+═════════════════
+
+    Specific Volume Mounts:
+    
+    volumes:
+      - orangehrm_config:/var/www/html/src/config   ← Config persists!
+      - orangehrm_cache:/var/www/html/src/cache     ← Cache persists!
+      - orangehrm_log:/var/www/html/src/log         ← Logs persist!
+      - orangehrm_data:/var/www/html/src/.../data   ← User data persists!
+      
+    Result: Only data directories mounted, configuration survives rebuilds
+
+
+ARCHITECTURE DIAGRAM:
+═══════════════════════
+
+    ┌──────────────────────────────────────────────────────────────┐
+    │                      DOCKER HOST                              │
+    │                                                               │
+    │  ┌────────────────┐         ┌────────────────┐               │
+    │  │  MySQL         │         │  OrangeHRM     │               │
+    │  │  Container     │         │  Container     │               │
+    │  │                │         │                │               │
+    │  │  Port: 3306   │◄────────┤  Port: 80      │               │
+    │  │                │         │                │               │
+    │  └───────┬────────┘         └────┬───────────┘               │
+    │          │                       │                           │
+    │          │                       │                           │
+    │  ┌───────▼────────────────┬──────▼───────────────────┐      │
+    │  │  PERSISTED VOLUMES     │                          │      │
+    │  │  ══════════════════    │                          │      │
+    │  │                        │                          │      │
+    │  │  mysql_data           │  orangehrm_config         │      │
+    │  │  │                     │  │                        │      │
+    │  │  ├─ Database tables   │  ├─ Conf.php ← Important! │      │
+    │  │  ├─ User data         │  │                        │      │
+    │  │  └─ All DB files      │  orangehrm_cache         │      │
+    │  │                        │  │                        │      │
+    │  │                        │  ├─ Compiled templates   │      │
+    │  │                        │  │                        │      │
+    │  │                        │  orangehrm_log           │      │
+    │  │                        │  │                        │      │
+    │  │                        │  ├─ Application logs     │      │
+    │  │                        │  │                        │      │
+    │  │                        │  orangehrm_data          │      │
+    │  │                        │  │                        │      │
+    │  │                        │  └─ User uploads         │      │
+    │  │                        │                          │      │
+    │  └─────────────────────────┴──────────────────────────┘      │
+    │                                                               │
+    │  These volumes PERSIST across container rebuilds!            │
+    │                                                               │
+    └──────────────────────────────────────────────────────────────┘
+
+
+DATA FLOW:
+══════════
+
+    FIRST TIME SETUP:
+    ─────────────────
+    
+    1. docker compose up -d --build
+    2. Visit http://localhost:8080
+    3. Setup wizard appears
+    4. Complete wizard with database details
+    5. Wizard creates: /var/www/html/src/config/Conf.php
+    6. Conf.php is written to orangehrm_config volume
+    7. Setup complete!
+    
+    
+    SUBSEQUENT REBUILDS:
+    ────────────────────
+    
+    1. docker compose down
+    2. docker compose up -d --build
+    3. New container starts
+    4. Mounts orangehrm_config volume
+    5. Finds existing Conf.php
+    6. Skips wizard, goes to login
+    7. Database data still intact in mysql_data volume
+    8. Everything works!
+
+
+FILE STRUCTURE:
+═══════════════
+
+    Project Root/
+    │
+    ├── docker-compose.yml           ← ✅ UPDATED (main)
+    ├── docker-compose.prod.yml      ← ✅ UPDATED (production)
+    ├── docker-compose.simple.yml    ← ✅ UPDATED (simple)
+    │
+    ├── START_HERE.md                ← 📄 NEW (start here!)
+    ├── QUICK_FIX_SUMMARY.md         ← 📄 NEW (overview)
+    ├── DOCKER_PERSISTENCE_GUIDE.md  ← 📄 NEW (detailed guide)
+    ├── MIGRATION_CHECKLIST.md       ← 📄 NEW (step-by-step)
+    ├── BEFORE_AFTER_COMPARISON.md   ← 📄 NEW (comparison)
+    ├── SOLUTION_DIAGRAM.txt         ← 📄 NEW (this file)
+    │
+    └── docker-helper.ps1            ← 🔧 NEW (helper script)
+
+
+MIGRATION STEPS:
+════════════════
+
+    ╔═══════════════════════════════════════╗
+    ║  OPTION 1: FRESH START (Recommended)  ║
+    ╚═══════════════════════════════════════╝
+    
+    1. docker compose down -v
+    2. docker compose up -d --build
+    3. Complete wizard (one time!)
+    4. Done!
+    
+    
+    ╔═══════════════════════════════════════╗
+    ║  OPTION 2: KEEP EXISTING DATA         ║
+    ╚═══════════════════════════════════════╝
+    
+    1. Backup: .\docker-helper.ps1 backup
+    2. docker compose down
+    3. docker compose up -d --build
+    4. If wizard appears, complete and restore backup
+    5. Done!
+    
+    
+    ╔═══════════════════════════════════════╗
+    ║  OPTION 3: USE HELPER SCRIPT          ║
+    ╚═══════════════════════════════════════╝
+    
+    1. .\docker-helper.ps1 backup
+    2. .\docker-helper.ps1 reset (type 'yes')
+    3. .\docker-helper.ps1 start
+    4. Complete wizard
+    5. Done!
+
+
+VERIFICATION:
+═════════════
+
+    Test the fix works:
+    
+    ┌─────────────────────────────────────┐
+    │ $ docker compose down                │
+    │ $ docker compose up -d --build      │
+    │ $ # Visit http://localhost:8080     │
+    └─────────────────────────────────────┘
+    
+    Expected Result:
+    ✅ No setup wizard
+    ✅ Login page appears
+    ✅ Can log in successfully
+    ✅ All data intact
+    
+    If you see this: SUCCESS! 🎉
+
+
+HELPER COMMANDS:
+════════════════
+
+    PowerShell Helper Script:
+    
+    .\docker-helper.ps1               # Show all commands
+    .\docker-helper.ps1 start         # Start containers
+    .\docker-helper.ps1 stop          # Stop (keep data)
+    .\docker-helper.ps1 rebuild       # Rebuild (keep data)
+    .\docker-helper.ps1 backup        # Backup database
+    .\docker-helper.ps1 status        # Show status
+    
+    
+    Manual Commands:
+    
+    docker compose up -d              # Start
+    docker compose down               # Stop (keep data)
+    docker compose up -d --build      # Rebuild (keep data)
+    docker compose down -v            # Delete everything
+    docker compose ps                 # Show status
+    docker logs orangehrm_app -f      # View logs
+
+
+VOLUME DETAILS:
+═══════════════
+
+    ┌─────────────────────┬──────────────────────────────────────┐
+    │ Volume Name         │ Purpose                               │
+    ├─────────────────────┼──────────────────────────────────────┤
+    │ mysql_data          │ MySQL database files                  │
+    │ orangehrm_config    │ Installation config (Conf.php)        │
+    │ orangehrm_cache     │ Application cache                     │
+    │ orangehrm_log       │ Application logs                      │
+    │ orangehrm_data      │ User uploads, files                   │
+    │ redis_data          │ Session storage (optional)            │
+    └─────────────────────┴──────────────────────────────────────┘
+    
+    View volumes:
+    docker volume ls | findstr orangehrm
+    
+    Inspect volume:
+    docker volume inspect orangehrm_mysql_data
+
+
+SUCCESS CRITERIA:
+═════════════════
+
+    You know it's working when:
+    
+    ✅ Setup wizard appears only ONCE
+    ✅ Can rebuild without losing data
+    ✅ Can stop/start containers freely
+    ✅ Database persists
+    ✅ Configuration persists
+    ✅ No more frustration!
+
+
+SUPPORT:
+════════
+
+    Read the documentation:
+    
+    1. START_HERE.md                 ← Quick start (3 steps)
+    2. QUICK_FIX_SUMMARY.md          ← Quick overview
+    3. MIGRATION_CHECKLIST.md        ← Step-by-step guide
+    4. DOCKER_PERSISTENCE_GUIDE.md   ← Detailed reference
+    5. BEFORE_AFTER_COMPARISON.md    ← Visual comparison
+    
+    Use the helper:
+    
+    .\docker-helper.ps1              ← PowerShell automation
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           SOLUTION COMPLETE! ✅                               ║
+║                                                                               ║
+║  Next Step: Read START_HERE.md and run the 3 commands to get started!       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
