@@ -57,3 +57,21 @@ VALUES (2, @position_screen_id, 1, 0, 0, 0);
 INSERT IGNORE INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
 VALUES (3, @position_screen_id, 1, 0, 0, 0);
 
+-- Create data group for Position API
+INSERT IGNORE INTO `ohrm_data_group` (`name`, `description`, `can_read`, `can_create`, `can_update`, `can_delete`)
+VALUES ('apiv2_admin_position', 'API-v2 Admin - Positions', 1, 1, 1, 1);
+
+-- Get Position data group ID
+SET @position_data_group_id := (SELECT id FROM ohrm_data_group WHERE name = 'apiv2_admin_position');
+
+-- Add data group permissions for all roles
+INSERT IGNORE INTO `ohrm_user_role_data_group` (`user_role_id`, `data_group_id`, `can_read`, `can_create`, `can_update`, `can_delete`, `self`)
+VALUES 
+  (1, @position_data_group_id, 1, 1, 1, 1, 0), -- Admin
+  (2, @position_data_group_id, 1, 0, 0, 0, 0), -- ESS
+  (3, @position_data_group_id, 1, 0, 0, 0, 0); -- Supervisor
+
+-- Add Position API permission
+INSERT IGNORE INTO `ohrm_api_permission` (`module_id`, `data_group_id`, `api_name`)
+VALUES (2, @position_data_group_id, 'OrangeHRM\\Admin\\Api\\PositionAPI');
+
