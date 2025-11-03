@@ -33,26 +33,27 @@ DEALLOCATE PREPARE stmt;
 -- Get Job menu parent ID
 SET @job_menu_id := (SELECT `id` FROM ohrm_menu_item WHERE `menu_title` = 'Job' AND `level` = 2);
 
--- Create screen for Positions
-INSERT INTO `ohrm_screen` (`name`, `module_id`, `action_url`, `menu_configurator`)
+-- Create screen for Positions (if not exists)
+INSERT IGNORE INTO `ohrm_screen` (`name`, `module_id`, `action_url`, `menu_configurator`)
 VALUES ('Positions', (SELECT id FROM ohrm_module WHERE name = 'admin'), 'viewPositionList', 'OrangeHRM\\Admin\\Menu\\PositionMenuConfigurator');
 
-SET @position_screen_id := LAST_INSERT_ID();
+-- Get Position screen ID
+SET @position_screen_id := (SELECT id FROM ohrm_screen WHERE name = 'Positions' AND module_id = (SELECT id FROM ohrm_module WHERE name = 'admin'));
 
 -- Add Positions menu item under Job (after Job Titles at order_hint 150)
-INSERT INTO `ohrm_menu_item` (`menu_title`, `screen_id`, `parent_id`, `level`, `order_hint`, `status`)
+INSERT IGNORE INTO `ohrm_menu_item` (`menu_title`, `screen_id`, `parent_id`, `level`, `order_hint`, `status`)
 VALUES ('Positions', @position_screen_id, @job_menu_id, 3, 150, 1);
 
 -- Add user role screen permissions (same as Job Titles)
 -- Admin role
-INSERT INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
+INSERT IGNORE INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
 VALUES (1, @position_screen_id, 1, 1, 1, 1);
 
 -- ESS role (read only)
-INSERT INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
+INSERT IGNORE INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
 VALUES (2, @position_screen_id, 1, 0, 0, 0);
 
 -- Supervisor role (read only)
-INSERT INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
+INSERT IGNORE INTO `ohrm_user_role_screen` (`user_role_id`, `screen_id`, `can_read`, `can_create`, `can_update`, `can_delete`)
 VALUES (3, @position_screen_id, 1, 0, 0, 0);
 
