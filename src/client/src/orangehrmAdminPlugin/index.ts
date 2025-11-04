@@ -18,6 +18,9 @@
 import JobTitle from './pages/jobTitle/JobTitle.vue';
 import EditJobTitle from './pages/jobTitle/EditJobTitle.vue';
 import SaveJobTitle from './pages/jobTitle/SaveJobTitle.vue';
+import Position from './pages/position/Position.vue';
+import EditPosition from './pages/position/EditPosition.vue';
+import SavePosition from './pages/position/SavePosition.vue';
 import JobCategory from './pages/jobCategory/JobCategory.vue';
 import EditJobCategory from './pages/jobCategory/EditJobCategory.vue';
 import SaveJobCategory from './pages/jobCategory/SaveJobCategory.vue';
@@ -75,6 +78,9 @@ export default {
   'job-title-list': JobTitle,
   'job-title-edit': EditJobTitle,
   'job-title-save': SaveJobTitle,
+  'position-list': Position,
+  'position-edit': EditPosition,
+  'position-save': SavePosition,
   'job-category-list': JobCategory,
   'job-category-edit': EditJobCategory,
   'job-category-save': SaveJobCategory,

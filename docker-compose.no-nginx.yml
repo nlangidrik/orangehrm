@@ -40,10 +40,11 @@ services:
       - DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
       - DB_USER=${MYSQL_USER:-orangehrm}
       - DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
-    # Mount only config, cache, and log directories (not entire /var/www/html)
-    # This preserves our custom code while allowing persistent configuration
+    # Mount only essential directories to persist data while allowing code updates
+    # This preserves Config.php and data while updating application code on rebuild
     volumes:
-      - orangehrm_config:/var/www/html/src/config
+      - orangehrm_data:/var/www/html/lib/confs
+      - orangehrm_uploads:/var/www/html/src/plugins/orangehrmPimPlugin/public/webroot/photos
       - orangehrm_cache:/var/www/html/src/cache
       - orangehrm_log:/var/www/html/src/log
     ports:
@@ -65,7 +66,9 @@ services:
 volumes:
   mysql_data:
     driver: local
-  orangehrm_config:
+  orangehrm_data:
+    driver: local
+  orangehrm_uploads:
     driver: local
   orangehrm_cache:
     driver: local

@@ -23,6 +23,7 @@ use OrangeHRM\Admin\Service\EmploymentStatusService;
 use OrangeHRM\Admin\Service\JobCategoryService;
 use OrangeHRM\Admin\Service\JobTitleService;
 use OrangeHRM\Admin\Service\LocationService;
+use OrangeHRM\Admin\Service\PositionService;
 use OrangeHRM\Core\Traits\Service\ConfigServiceTrait;
 use OrangeHRM\Core\Vue\Component;
 use OrangeHRM\Core\Vue\Prop;
@@ -35,6 +36,7 @@ class EmployeeJobController extends BaseViewEmployeeController
     use EmployeeServiceTrait;
 
     protected ?JobTitleService $jobTitleService = null;
+    protected ?PositionService $positionService = null;
     protected ?JobCategoryService $jobCategoryService = null;
     protected ?CompanyStructureService $companyStructureService = null;
     protected ?EmploymentStatusService $employmentStatusService = null;
@@ -49,6 +51,17 @@ class EmployeeJobController extends BaseViewEmployeeController
             $this->jobTitleService = new JobTitleService();
         }
         return $this->jobTitleService;
+    }
+
+    /**
+     * @return PositionService
+     */
+    protected function getPositionService(): PositionService
+    {
+        if (!$this->positionService instanceof PositionService) {
+            $this->positionService = new PositionService();
+        }
+        return $this->positionService;
     }
 
     /**
@@ -104,6 +117,9 @@ class EmployeeJobController extends BaseViewEmployeeController
 
             $jobTitles = $this->getJobTitleService()->getJobTitleArrayForEmployee($empNumber);
             $component->addProp(new Prop('job-titles', Prop::TYPE_ARRAY, $jobTitles));
+
+            $positions = $this->getPositionService()->getPositionArrayForEmployee($empNumber);
+            $component->addProp(new Prop('positions', Prop::TYPE_ARRAY, $positions));
 
             $jobCategories = $this->getJobCategoryService()->getJobCategoryArray();
             $component->addProp(new Prop('job-categories', Prop::TYPE_ARRAY, $jobCategories));
