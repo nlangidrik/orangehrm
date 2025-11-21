@@ -1,0 +1,33 @@
+/* Custom Styles for Marshall Islands PSS OrangeHRM */
+
+/* Hide the Upgrade button */
+.orangehrm-upgrade-container,
+.orangehrm-upgrade-link,
+.orangehrm-upgrade-button {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Replace OrangeHRM logo with PSS logo */
+.oxd-brand-banner img,
+.oxd-brand-banner,
+.orangehrm-login-branding img {
+    content: url('/images/logo.png') !important;
+    max-height: 60px !important;
+    width: auto !important;
+}
+
+/* Sidebar logo when collapsed */
+.oxd-sidepanel-header--collapsed .oxd-brand-banner img {
+    content: url('/images/logo.png') !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+}
+
+/* Customize branding colors for PSS */
+:root {
+    --oxd-primary-one-color: #1e3a8a; /* PSS Blue */
+    --oxd-primary-gradient-start-color: #1e3a8a;
+    --oxd-primary-gradient-end-color: #3b82f6;
+}

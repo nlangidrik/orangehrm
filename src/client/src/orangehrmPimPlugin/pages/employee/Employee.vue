@@ -55,7 +55,10 @@
               <jobtitle-dropdown v-model="filters.jobTitleId" />
             </oxd-grid-item>
             <oxd-grid-item>
-              <position-dropdown v-model="filters.positionId" />
+              <oxd-input-field
+                v-model="filters.positionName"
+                :label="$t('general.position')"
+              />
             </oxd-grid-item>
             <oxd-grid-item>
               <subunit-dropdown v-model="filters.subunitId" />
@@ -134,7 +137,6 @@ import {navigate} from '@ohrm/core/util/helper/navigation';
 import {APIService} from '@/core/util/services/api.service';
 import EmployeeAutocomplete from '@/core/components/inputs/EmployeeAutocomplete';
 import JobtitleDropdown from '@/orangehrmPimPlugin/components/JobtitleDropdown';
-import PositionDropdown from '@/orangehrmPimPlugin/components/PositionDropdown';
 import SubunitDropdown from '@/orangehrmPimPlugin/components/SubunitDropdown';
 import EmploymentStatusDropdown from '@/orangehrmPimPlugin/components/EmploymentStatusDropdown';
 import IncludeEmployeeDropdown from '@/core/components/dropdown/IncludeEmployeeDropdown';
@@ -150,7 +152,7 @@ const defaultSortOrder = {
   'employee.firstName': 'ASC',
   'employee.lastName': 'DEFAULT',
   'jobTitle.jobTitleName': 'DEFAULT',
-  'position.name': 'DEFAULT',
+  'employee.positionName': 'DEFAULT',
   'empStatus.name': 'DEFAULT',
   'subunit.name': 'DEFAULT',
   'supervisor.firstName': 'DEFAULT',
@@ -161,7 +163,6 @@ export default {
     'delete-confirmation': DeleteConfirmationDialog,
     'employee-autocomplete': EmployeeAutocomplete,
     'jobtitle-dropdown': JobtitleDropdown,
-    'position-dropdown': PositionDropdown,
     'subunit-dropdown': SubunitDropdown,
     'employment-status-dropdown': EmploymentStatusDropdown,
     'include-employee-dropdown': IncludeEmployeeDropdown,
@@ -191,9 +192,7 @@ export default {
           jobTitle: item.jobTitle?.isDeleted
             ? item.jobTitle.title + $t('general.deleted')
             : item.jobTitle?.title,
-          position: item.position?.isDeleted
-            ? item.position.name + $t('general.deleted')
-            : item.position?.name,
+          position: item.positionName || '',
           empStatus: item.empStatus?.name,
           subunit: item.subunit?.name,
           supervisor: item.supervisors
@@ -215,7 +214,7 @@ export default {
       empStatusId: null,
       supervisor: null,
       jobTitleId: null,
-      positionId: null,
+      positionName: '',
       subunitId: null,
       includeEmployees: {
         id: 1,
@@ -241,7 +240,7 @@ export default {
           ? [filters.value.supervisor.id]
           : undefined,
         jobTitleId: filters.value.jobTitleId?.id,
-        positionId: filters.value.positionId?.id,
+        positionName: filters.value.positionName || undefined,
         subunitId: filters.value.subunitId?.id,
         sortField: sortField.value,
         sortOrder: sortOrder.value,
@@ -322,7 +321,7 @@ export default {
         {
           name: 'position',
           title: 'Position',
-          sortField: 'position.name',
+          sortField: 'employee.positionName',
           style: {flex: 1},
         },
         {

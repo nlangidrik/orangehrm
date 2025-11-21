@@ -26,7 +26,6 @@ use OrangeHRM\Entity\JobCategory;
 use OrangeHRM\Entity\JobTitle;
 use OrangeHRM\Entity\Location;
 use OrangeHRM\Entity\Nationality;
-use OrangeHRM\Entity\Position;
 use OrangeHRM\Entity\Subunit;
 
 class EmployeeDecorator
@@ -167,15 +166,6 @@ class EmployeeDecorator
         $this->getEmployee()->setJobTitle($jobTitle);
     }
 
-    /**
-     * @param int|null $id
-     */
-    public function setPositionById(?int $id): void
-    {
-        /** @var Position|null $position */
-        $position = is_null($id) ? null : $this->getReference(Position::class, $id);
-        $this->getEmployee()->setPosition($position);
-    }
 
     /**
      * @param int|null $id

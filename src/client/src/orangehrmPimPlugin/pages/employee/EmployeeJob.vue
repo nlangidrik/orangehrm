@@ -51,10 +51,8 @@
             </oxd-grid-item>
             <oxd-grid-item>
               <oxd-input-field
-                v-model="job.positionId"
-                type="select"
+                v-model="job.positionName"
                 label="Position"
-                :options="normalizedPositions"
                 :disabled="!hasUpdatePermissions"
               />
             </oxd-grid-item>
@@ -220,7 +218,7 @@ import {OxdSwitchInput} from '@ohrm/oxd';
 const jobDetailsModel = {
   joinedDate: '',
   jobTitleId: [],
-  positionId: [],
+  positionName: '',
   empStatusId: [],
   jobCategoryId: [],
   subunitId: [],
@@ -255,10 +253,6 @@ export default {
       default: () => [],
     },
     jobTitles: {
-      type: Array,
-      default: () => [],
-    },
-    positions: {
       type: Array,
       default: () => [],
     },
@@ -360,16 +354,6 @@ export default {
         };
       });
     },
-    normalizedPositions() {
-      return this.positions.map((position) => {
-        return {
-          id: position.id,
-          label: position?.deleted
-            ? position.label + this.$t('general.deleted')
-            : position.label,
-        };
-      });
-    },
     terminationDate() {
       return this.termination?.date
         ? formatDate(parseDate(this.termination.date), this.jsDateFormat, {
@@ -412,7 +396,7 @@ export default {
           data: {
             ...this.job,
             jobTitleId: this.job.jobTitleId?.id,
-            positionId: this.job.positionId?.id,
+            positionName: this.job.positionName,
             jobCategoryId: this.job.jobCategoryId?.id,
             subunitId: this.job.subunitId?.id,
             empStatusId: this.job.empStatusId?.id,
@@ -499,9 +483,7 @@ export default {
       this.job.jobTitleId = this.normalizedJobTitles.find(
         (item) => item.id === data.jobTitle?.id,
       );
-      this.job.positionId = this.normalizedPositions.find(
-        (item) => item.id === data.position?.id,
-      );
+      this.job.positionName = data.positionName || '';
       this.job.jobCategoryId = this.jobCategories.find(
         (item) => item.id === data.jobCategory?.id,
       );

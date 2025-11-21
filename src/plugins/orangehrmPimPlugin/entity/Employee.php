@@ -198,12 +198,11 @@ class Employee
     private ?JobTitle $jobTitle = null;
 
     /**
-     * @var Position|null
+     * @var string|null
      *
-     * @ORM\ManyToOne(targetEntity="OrangeHRM\Entity\Position", inversedBy="employees")
-     * @ORM\JoinColumn(name="position_id", referencedColumnName="id", nullable=true)
+     * @ORM\Column(name="position_name", type="string", length=100, nullable=true)
      */
-    private ?Position $position = null;
+    private ?string $positionName = null;
 
     /**
      * @var JobCategory|null
@@ -903,19 +902,19 @@ class Employee
     }
 
     /**
-     * @return Position|null
+     * @return string|null
      */
-    public function getPosition(): ?Position
+    public function getPositionName(): ?string
     {
-        return $this->position;
+        return $this->positionName;
     }
 
     /**
-     * @param Position|null $position
+     * @param string|null $positionName
      */
-    public function setPosition(?Position $position): void
+    public function setPositionName(?string $positionName): void
     {
-        $this->position = $position;
+        $this->positionName = $positionName;
     }
 
     /**

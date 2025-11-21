@@ -1,4 +1,4 @@
-<!--
+<?php
 /**
  * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
  * all the essential functionalities required for any enterprise.
@@ -15,41 +15,31 @@
  * You should have received a copy of the GNU General Public License along with OrangeHRM.
  * If not, see <https://www.gnu.org/licenses/>.
  */
- -->
 
-<template>
-  <oxd-input-field
-    type="select"
-    label="Position"
-    :options="options"
-  />
-</template>
+namespace OrangeHRM\Admin\Controller\File;
 
-<script>
-import {ref, onBeforeMount} from 'vue';
-import {APIService} from '@ohrm/core/util/services/api.service';
-export default {
-  name: 'PositionDropdown',
-  setup() {
-    const options = ref([]);
-    const http = new APIService(
-      window.appGlobal.baseUrl,
-      '/api/v2/admin/positions',
-    );
-    onBeforeMount(() => {
-      http.getAll({limit: 0}).then(({data}) => {
-        options.value = data.data.map((item) => {
-          return {
-            id: item.id,
-            label: item.name,
-          };
-        });
-      });
-    });
-    return {
-      options,
-    };
-  },
-};
-</script>
+use OrangeHRM\Core\Controller\AbstractFileController;
+use OrangeHRM\Framework\Http\Request;
+use OrangeHRM\Framework\Http\Response;
+
+class JobTitleCsvImportSampleAttachmentController extends AbstractFileController
+{
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function handle(Request $request): Response
+    {
+        $response = $this->getResponse();
+        $content = "job_title,job_description,note";
+        $this->setCommonHeadersToResponse(
+            'jobTitleImportData.csv',
+            'application/csv',
+            strlen($content),
+            $response
+        );
+        $response->setContent($content);
+        return $response;
+    }
+}
 

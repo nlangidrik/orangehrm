@@ -16,9 +16,10 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace OrangeHRM\Pim\Api;
+namespace OrangeHRM\Admin\Api;
 
 use Exception;
+use OrangeHRM\Admin\Service\JobTitleCsvDataImportService;
 use OrangeHRM\Core\Api\CommonParams;
 use OrangeHRM\Core\Api\V2\CollectionEndpoint;
 use OrangeHRM\Core\Api\V2\Endpoint;
@@ -35,9 +36,8 @@ use OrangeHRM\Core\Api\V2\Validator\Rules;
 use OrangeHRM\Core\Exception\CSVUploadFailedException;
 use OrangeHRM\Core\Traits\ORM\EntityManagerHelperTrait;
 use OrangeHRM\ORM\Exception\TransactionException;
-use OrangeHRM\Pim\Service\PimCsvDataImportService;
 
-class EmployeeCSVImportAPI extends Endpoint implements CollectionEndpoint
+class JobTitleCSVImportAPI extends Endpoint implements CollectionEndpoint
 {
     use EntityManagerHelperTrait;
 
@@ -50,21 +50,20 @@ class EmployeeCSVImportAPI extends Endpoint implements CollectionEndpoint
     public const PARAM_RULE_IMPORT_FILE_EXTENSIONS = ["csv"];
 
     /**
-     * @var null|PimCsvDataImportService
+     * @var null|JobTitleCsvDataImportService
      */
-    protected ?PimCsvDataImportService $pimCsvDataImportService = null;
+    protected ?JobTitleCsvDataImportService $jobTitleCsvDataImportService = null;
 
     /**
-     * @return PimCsvDataImportService
+     * @return JobTitleCsvDataImportService
      */
-    public function getPimCsvDataImportService(): PimCsvDataImportService
+    public function getJobTitleCsvDataImportService(): JobTitleCsvDataImportService
     {
-        if (!$this->pimCsvDataImportService instanceof PimCsvDataImportService) {
-            $this->pimCsvDataImportService = new PimCsvDataImportService();
+        if (!$this->jobTitleCsvDataImportService instanceof JobTitleCsvDataImportService) {
+            $this->jobTitleCsvDataImportService = new JobTitleCsvDataImportService();
         }
-        return $this->pimCsvDataImportService;
+        return $this->jobTitleCsvDataImportService;
     }
-
 
     /**
      * @inheritDoc
@@ -83,66 +82,25 @@ class EmployeeCSVImportAPI extends Endpoint implements CollectionEndpoint
     }
 
     /**
-     * @OA\Post(
-     *     path="/api/v2/pim/csv-import",
-     *     tags={"PIM/Employee CSV Import"},
-     *     summary="Import Employee Records",
-     *     operationId="import-employee-records",
-     *     description="This endpoint allows you to import employee records via a CSV file (in Base64 format).",
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="attachment", ref="#/components/schemas/Base64Attachment"),
-     *             required={"attachment"}
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array", @OA\Items()),
-     *             @OA\Property(property="meta",
-     *                 type="object",
-     *                 @OA\Property(property="failed", description="The total number of rows that failed to import", type="integer"),
-     *                 @OA\Property(property="failedRows", description="The list of rows that failed to import", type="array", @OA\Items(type="integer")),
-     *                 @OA\Property(property="success", description="The total number of rows that successfully imported", type="integer"),
-     *                 @OA\Property(property="total", description="The total number of rows in the CSV", type="integer"),
-     *             )
-     *         )
-     *     )
-     * )
-     *
      * @inheritDoc
      * @throws Exception
      */
     public function create(): EndpointResult
     {
-        try {
-            $this->getLogger()->error('CSV Import - Starting create() method');
-            $attachment = $this->getRequestParams()->getAttachment(
-                RequestParams::PARAM_TYPE_BODY,
-                self::PARAMETER_ATTACHMENT
-            );
-            $this->getLogger()->error('CSV Import - Attachment retrieved successfully');
+        $attachment = $this->getRequestParams()->getAttachment(
+            RequestParams::PARAM_TYPE_BODY,
+            self::PARAMETER_ATTACHMENT
+        );
 
-            $this->beginTransaction();
-            $csvContent = $attachment->getContent();
-            $this->getLogger()->error('CSV Import - File size: ' . strlen($csvContent) . ' bytes');
-            $this->getLogger()->error('CSV Import - First 500 chars: ' . substr($csvContent, 0, 500));
-            $result = $this->getPimCsvDataImportService()->import($csvContent);
+        $this->beginTransaction();
+        try {
+            $result = $this->getJobTitleCsvDataImportService()->import($attachment->getContent());
             $this->commitTransaction();
-            $this->getLogger()->error('CSV Import - Import completed successfully');
         } catch (CSVUploadFailedException $e) {
             $this->rollBackTransaction();
-            $errorMsg = $e->getMessage();
-            $this->getLogger()->error('CSVUploadFailedException in EmployeeCSVImportAPI: ' . $errorMsg);
-            $this->getLogger()->error('Error message length: ' . strlen($errorMsg));
-            throw new BadRequestException($errorMsg);
+            throw new BadRequestException($e->getMessage());
         } catch (Exception $e) {
             $this->rollBackTransaction();
-            $this->getLogger()->error('Exception in EmployeeCSVImportAPI: ' . $e->getMessage());
-            $this->getLogger()->error('Exception type: ' . get_class($e));
-            $this->getLogger()->error('Exception trace: ' . $e->getTraceAsString());
             throw new TransactionException($e);
         }
 
@@ -167,7 +125,6 @@ class EmployeeCSVImportAPI extends Endpoint implements CollectionEndpoint
             $this->getAttachmentRule(),
         );
     }
-
 
     /**
      * @return ParamRule
@@ -199,3 +156,4 @@ class EmployeeCSVImportAPI extends Endpoint implements CollectionEndpoint
         throw $this->getNotImplementedException();
     }
 }
+

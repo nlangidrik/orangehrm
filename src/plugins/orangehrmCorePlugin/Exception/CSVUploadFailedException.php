@@ -29,4 +29,13 @@ class CSVUploadFailedException extends Exception
     {
         return new self("The CSV File Is Not Valid");
     }
+
+    /**
+     * @param string $message
+     * @return static
+     */
+    public static function validationFailedWithMessage(string $message): self
+    {
+        return new self($message);
+    }
 }
