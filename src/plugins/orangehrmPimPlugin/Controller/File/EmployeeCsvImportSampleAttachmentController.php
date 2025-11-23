@@ -31,8 +31,8 @@ class EmployeeCsvImportSampleAttachmentController extends AbstractFileController
     public function handle(Request $request): Response
     {
         $response = $this->getResponse();
-        // CSV header with all 27 columns (22 original + 5 new optional fields)
-        $content = "first_name,middle_name,last_name,employee_id,other_id,driver's_license_no,license_expiry_date,gender,marital_status,nationality,date_of_birth,address_street_1,address_street_2,city,state/province,zip/postal_code,country,home_telephone,mobile,work_telephone,work_email,other_email,job_title,employment_status,sub_unit,position,supervisor_employee_id";
+        // CSV header with all 33 columns (22 original + 11 new optional fields: job_title, employment_status, sub_unit, position, supervisor_employee_id, joined_date, ssn_number, sin_number, nick_name, smoker, military_service)
+        $content = "first_name,middle_name,last_name,employee_id,other_id,driver's_license_no,license_expiry_date,gender,marital_status,nationality,date_of_birth,address_street_1,address_street_2,city,state/province,zip/postal_code,country,home_telephone,mobile,work_telephone,work_email,other_email,job_title,employment_status,sub_unit,position,supervisor_employee_id,joined_date,ssn_number,sin_number,nick_name,smoker,military_service";
         $this->setCommonHeadersToResponse(
             'importData.csv',
             'application/csv',

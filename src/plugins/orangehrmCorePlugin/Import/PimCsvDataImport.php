@@ -84,8 +84,9 @@ class PimCsvDataImport extends CsvDataImport
             || $this->getTextHelper()->strLength($lastName) > EmployeeService::LAST_NAME_MAX_LENGTH) {
             return false;
         }
-        // Support up to 27 columns (22 original + 5 new: job_title, employment_status, sub_unit, position, supervisor_employee_id)
-        for ($i = 3; $i < 27; $i++) {
+        // Support up to 33 columns (22 original + 11 new: job_title, employment_status, sub_unit, position, supervisor_employee_id, joined_date, ssn_number, sin_number, nick_name, smoker, military_service)
+        // Increased from 27 to 33 columns to support additional fields
+        for ($i = 3; $i < 33; $i++) {
             if (!isset($data[$i])) {
                 $data[$i] = null;
             }
@@ -230,6 +231,42 @@ class PimCsvDataImport extends CsvDataImport
 
         if ($this->getTextHelper()->strLength($data[25]) <= 100) {
             $employee->setPositionName($data[25]);
+        }
+
+        // Handle joined_date (column 27) - set before saving
+        $joinedDate = $this->getDateTimeIfValid($data[27]);
+        if ($joinedDate !== null) {
+            $employee->setJoinedDate($joinedDate);
+        }
+
+        // Handle ssn_number (column 28)
+        if ($this->getTextHelper()->strLength($data[28]) <= 100) {
+            $employee->setSsnNumber($data[28]);
+        }
+
+        // Handle sin_number (column 29)
+        if ($this->getTextHelper()->strLength($data[29]) <= 100) {
+            $employee->setSinNumber($data[29]);
+        }
+
+        // Handle nick_name (column 30)
+        if ($this->getTextHelper()->strLength($data[30]) <= 100) {
+            $employee->setNickName($data[30]);
+        }
+
+        // Handle smoker (column 31) - accepts "yes", "no", "1", "0", "true", "false"
+        if (!$this->isEmpty($data[31])) {
+            $smokerValue = strtolower(trim($data[31]));
+            if (in_array($smokerValue, ['yes', '1', 'true', 'y'])) {
+                $employee->setSmoker(1);
+            } elseif (in_array($smokerValue, ['no', '0', 'false', 'n', ''])) {
+                $employee->setSmoker(0);
+            }
+        }
+
+        // Handle military_service (column 32)
+        if ($this->getTextHelper()->strLength($data[32]) <= 100) {
+            $employee->setMilitaryService($data[32]);
         }
 
         $this->getEmployeeService()->saveEmployee($employee);

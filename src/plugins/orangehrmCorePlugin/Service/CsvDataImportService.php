@@ -62,6 +62,17 @@ class CsvDataImportService
         $expectedHeaderCount = count($headerValues);
         $csvHeaderCount = count($csvHeader);
         
+        // Log expected header count for debugging
+        $this->getLogger()->error('CsvDataImportService::import - Expected header count: ' . $expectedHeaderCount);
+        $this->getLogger()->error('CsvDataImportService::import - Expected headers: ' . json_encode($headerValues));
+        
+        // Ensure header is truncated to expected count if it has more columns
+        if ($csvHeaderCount > $expectedHeaderCount) {
+            $this->getLogger()->warning("CsvDataImportService::import - Truncating header from {$csvHeaderCount} to {$expectedHeaderCount} columns");
+            $csvHeader = array_slice($csvHeader, 0, $expectedHeaderCount);
+            $csvHeaderCount = count($csvHeader);
+        }
+        
         $this->getLogger()->error('CsvDataImportService::import - CSV header count: ' . $csvHeaderCount);
         $this->getLogger()->error('CsvDataImportService::import - CSV header: ' . json_encode($csvHeader));
         
@@ -77,6 +88,7 @@ class CsvDataImportService
         // For backward compatibility, check if the first N columns match where N is min(csvHeaderCount, expectedHeaderCount)
         // Also trim whitespace and compare case-insensitively for better compatibility
         $headerMatches = true;
+        // Only check up to the expected number of columns - if CSV has more, ignore the extras
         $columnsToCheck = min($csvHeaderCount, $expectedHeaderCount);
         $mismatchedColumn = null;
         
@@ -89,16 +101,17 @@ class CsvDataImportService
             return strtolower(trim($col));
         }, $headerValues);
         
-        $this->getLogger()->error('CsvDataImportService::import - Checking ' . $columnsToCheck . ' columns');
+        $this->getLogger()->error('CsvDataImportService::import - Checking ' . $columnsToCheck . ' columns (CSV has ' . $csvHeaderCount . ', expected ' . $expectedHeaderCount . ')');
         
-        // If CSV has fewer columns than expected, that's OK for backward compatibility
-        // But we still need to validate that the columns that exist match
+        // Validate that the first N columns match where N = min(csv columns, expected columns)
+        // If CSV has more columns than expected, we only validate the first expectedHeaderCount columns
         for ($i = 0; $i < $columnsToCheck; $i++) {
             $csvColumn = $normalizedCsvHeader[$i] ?? '';
             $expectedColumn = $normalizedExpectedHeader[$i] ?? '';
             
             // Skip empty columns in CSV (allow for flexibility)
-            if (empty($csvColumn) && $i >= $csvHeaderCount) {
+            if (empty($csvColumn)) {
+                $this->getLogger()->warning("CsvDataImportService::import - Column {$i} is empty in CSV, skipping validation");
                 continue;
             }
             
@@ -123,14 +136,16 @@ class CsvDataImportService
             if ($csvHeaderCount < $expectedHeaderCount) {
                 $errorMsg .= "Your CSV has {$csvHeaderCount} columns, but {$expectedHeaderCount} are expected. ";
                 $errorMsg .= "Missing columns: " . implode(', ', array_slice($headerValues, $csvHeaderCount));
-            } elseif ($csvHeaderCount > $expectedHeaderCount) {
-                $errorMsg .= "Your CSV has {$csvHeaderCount} columns, but only {$expectedHeaderCount} are expected. ";
-                $errorMsg .= "Extra columns found. Please remove columns after: " . $headerValues[$expectedHeaderCount - 1];
             } else {
                 $errorMsg .= "Please check column {$mismatchedColumn['position']} - it should be '{$mismatchedColumn['expected']}' but you have '{$mismatchedColumn['csv']}'.";
             }
             $this->getLogger()->error('CsvDataImportService::import - Throwing validation error: ' . $errorMsg);
             throw CSVUploadFailedException::validationFailedWithMessage($errorMsg);
+        }
+        
+        // If CSV has more columns than expected, log but allow it (headers matched, so extra columns are OK)
+        if ($csvHeaderCount > $expectedHeaderCount) {
+            $this->getLogger()->warning("CSV has {$csvHeaderCount} columns, but only {$expectedHeaderCount} are expected. Extra columns will be ignored.");
         }
         
         $this->getLogger()->error('CsvDataImportService::import - Header validation passed');
@@ -182,6 +197,9 @@ class CsvDataImportService
         $rowNumber = 0;
         $maxColumns = count($headerValues);
         
+        // Log maxColumns for debugging - should be 33 for PIM import
+        $this->getLogger()->error("getEmployeeArrayFromCSV - maxColumns (from headerValues count): {$maxColumns}");
+        
         while (($data = fgetcsv($stream, 0, ",")) !== false) {
             $rowNumber++;
             $dataCount = count($data);
@@ -189,14 +207,12 @@ class CsvDataImportService
             $this->getLogger()->error("getEmployeeArrayFromCSV - Row {$rowNumber}: {$dataCount} columns");
             
             // More lenient validation: allow rows with fewer columns (will be padded)
-            // Only reject if row has MORE columns than expected (likely a formatting issue)
+            // Allow rows with MORE columns than expected - just truncate to maxColumns
             if ($dataCount > $maxColumns) {
-                fclose($stream);
                 $rowType = $rowNumber === 1 ? 'header' : "data row {$rowNumber}";
-                $this->getLogger()->error("getEmployeeArrayFromCSV - Row {$rowNumber} has too many columns: {$dataCount} > {$maxColumns}");
-                throw CSVUploadFailedException::validationFailedWithMessage(
-                    "CSV VALIDATION ERROR: {$rowType} has {$dataCount} columns, but maximum {$maxColumns} columns are allowed. Please check row {$rowNumber} for extra commas or formatting issues."
-                );
+                $this->getLogger()->warning("getEmployeeArrayFromCSV - Row {$rowNumber} has {$dataCount} columns, but only {$maxColumns} are expected. Extra columns will be ignored.");
+                // Truncate the data array to maxColumns
+                $data = array_slice($data, 0, $maxColumns);
             }
             
             // Pad data array to match header count if needed (for backward compatibility)

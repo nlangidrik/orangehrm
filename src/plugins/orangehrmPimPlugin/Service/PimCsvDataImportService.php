@@ -50,7 +50,13 @@ class PimCsvDataImportService
         "employment_status",
         "sub_unit",
         "position",
-        "supervisor_employee_id"
+        "supervisor_employee_id",
+        "joined_date",
+        "ssn_number",
+        "sin_number",
+        "nick_name",
+        "smoker",
+        "military_service"
     ];
 
     /**
