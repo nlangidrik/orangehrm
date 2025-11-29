@@ -33,6 +33,7 @@ class EmployeeSearchFilterParams extends FilterParams
         'employee.empNumber',
         'employee.employeeId',
         'jobTitle.jobTitleName',
+        'employee.positionName',
         'empStatus.name',
         'subunit.name',
         'supervisor.firstName',
@@ -76,6 +77,10 @@ class EmployeeSearchFilterParams extends FilterParams
      * @var int|null
      */
     protected ?int $jobTitleId = null;
+    /**
+     * @var string|null
+     */
+    protected ?string $positionName = null;
     /**
      * @var int|null
      */
@@ -210,6 +215,22 @@ class EmployeeSearchFilterParams extends FilterParams
     public function setJobTitleId(?int $jobTitleId): void
     {
         $this->jobTitleId = $jobTitleId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPositionName(): ?string
+    {
+        return $this->positionName;
+    }
+
+    /**
+     * @param string|null $positionName
+     */
+    public function setPositionName(?string $positionName): void
+    {
+        $this->positionName = $positionName;
     }
 
     /**

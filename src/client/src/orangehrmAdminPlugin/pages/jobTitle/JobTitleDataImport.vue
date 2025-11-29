@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License along with OrangeHRM.
  * If not, see <https://www.gnu.org/licenses/>.
  */
- -->
+-->
 
 <template>
   <div class="orangehrm-background-container">
     <div class="orangehrm-card-container">
       <oxd-text class="orangehrm-main-title">
-        {{ $t('pim.data_import') }}
+        {{ $t('admin.job_title_data_import') }}
       </oxd-text>
 
       <oxd-divider />
@@ -32,41 +32,37 @@
         <ul>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{ $t('pim.column_order_should_not_be_changed') }}
+              {{ $t('admin.column_order_should_not_be_changed') }}
             </oxd-text>
           </li>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{ $t('pim.first_name_and_last_name_are_compulsory') }}
+              {{ $t('admin.job_title_is_compulsory') }}
             </oxd-text>
           </li>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{ $t('pim.all_date_fields_should_be_in_yyyy_mm_dd_format') }}
+              {{ $t('admin.job_title_name_max_length_100') }}
             </oxd-text>
           </li>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{ $t('pim.gender_specified_value_should_be_either_m_or_f') }}
+              {{ $t('admin.job_description_max_length_400') }}
             </oxd-text>
           </li>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{
-                $t(
-                  'pim.each_import_file_should_be_configured_for_100_records_or_less',
-                )
-              }}
+              {{ $t('admin.note_max_length_400') }}
             </oxd-text>
           </li>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{ $t('pim.multiple_import_files_may_be_required') }}
+              {{ $t('admin.duplicate_job_titles_will_be_skipped') }}
             </oxd-text>
           </li>
           <li>
             <oxd-text class="orangehrm-information-card-text">
-              {{ $t('pim.sample_csv_file') }} :
+              {{ $t('admin.sample_csv_file') }} :
               <a
                 href="#"
                 class="download-link"
@@ -86,8 +82,6 @@
             <oxd-grid-item>
               <oxd-input-field
                 v-model="attachment.attachment"
-                name="csv_import_file"
-                id="csv_import_file"
                 type="file"
                 :rules="rules.attachment"
                 :label="$t('general.select_file')"
@@ -111,11 +105,11 @@
         </oxd-form-actions>
       </oxd-form>
     </div>
-    <employee-data-import-modal
+    <job-title-data-import-modal
       v-if="importModalState"
       :data="importModalState"
       @close="onImportModalClose"
-    ></employee-data-import-modal>
+    ></job-title-data-import-modal>
   </div>
 </template>
 
@@ -127,7 +121,7 @@ import {
 } from '@/core/util/validation/rules';
 import useForm from '@ohrm/core/util/composable/useForm';
 import {APIService} from '@/core/util/services/api.service';
-import EmployeeDataImportModal from '@/orangehrmPimPlugin/components/EmployeeDataImportModal';
+import JobTitleDataImportModal from '@/orangehrmAdminPlugin/components/JobTitleDataImportModal';
 
 const attachmentModel = {
   attachment: null,
@@ -135,7 +129,7 @@ const attachmentModel = {
 
 export default {
   components: {
-    'employee-data-import-modal': EmployeeDataImportModal,
+    'job-title-data-import-modal': JobTitleDataImportModal,
   },
   props: {
     allowedFileTypes: {
@@ -150,10 +144,8 @@ export default {
   setup() {
     const http = new APIService(
       window.appGlobal.baseUrl,
-      `/api/v2/pim/csv-import`,
+      `/api/v2/admin/job-titles/csv-import`,
     );
-    // Don't set up response interceptors - we'll handle errors in the catch block
-    // This allows us to show detailed error messages
     const {formRef, reset} = useForm();
     return {
       http,
@@ -194,62 +186,13 @@ export default {
           const {meta} = response.data;
           this.importModalState = meta;
         })
-        .catch((error) => {
-          // Log everything to help debug
-          console.error('=== CSV Import Error Debug ===');
-          console.error('Error object:', error);
-          console.error('Error response:', error.response);
-          console.error('Error response data:', error.response?.data);
-          console.error('Error response status:', error.response?.status);
-          console.error('Error message:', error.message);
-          
-          let errorMessage = this.$t('general.unexpected_error');
-          
-          // Check the error response structure - be very thorough
-          if (error.response?.data) {
-            const responseData = error.response.data;
-            console.error('Full response data:', JSON.stringify(responseData, null, 2));
-            
-            // Try different error response formats
-            if (responseData.error?.message) {
-              errorMessage = responseData.error.message;
-              console.error('Found error message in responseData.error.message:', errorMessage);
-            } else if (typeof responseData.error === 'string') {
-              errorMessage = responseData.error;
-              console.error('Found error message as string in responseData.error:', errorMessage);
-            } else if (responseData.message) {
-              errorMessage = responseData.message;
-              console.error('Found error message in responseData.message:', errorMessage);
-            } else if (typeof responseData === 'string') {
-              errorMessage = responseData;
-              console.error('Response data is string:', errorMessage);
-            } else if (responseData.error && typeof responseData.error === 'object') {
-              errorMessage = JSON.stringify(responseData.error);
-              console.error('Error object stringified:', errorMessage);
-            } else {
-              errorMessage = JSON.stringify(responseData);
-              console.error('Full response stringified:', errorMessage);
-            }
-          } else if (error.message) {
-            errorMessage = error.message;
-            console.error('Using error.message:', errorMessage);
-          }
-          
-          console.error('Final error message to display:', errorMessage);
-          
-          // Show error toast with the extracted message
-          this.$toast.error({
-            title: this.$t('general.error'),
-            message: errorMessage,
-          });
-        })
         .finally(() => {
           this.reset();
           this.isLoading = false;
         });
     },
     onClickDownload() {
-      const downUrl = `${window.appGlobal.baseUrl}/pim/sampleCsvDownload`;
+      const downUrl = `${window.appGlobal.baseUrl}/admin/jobTitle/sampleCsvDownload`;
       window.open(downUrl, '_blank');
     },
     onImportModalClose() {
@@ -274,3 +217,4 @@ export default {
   }
 }
 </style>
+

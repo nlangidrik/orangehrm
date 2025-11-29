@@ -187,6 +187,11 @@ class EmployeeDao extends BaseDao
                 ->setParameter('jobTitleId', $employeeSearchParamHolder->getJobTitleId());
         }
 
+        if (!is_null($employeeSearchParamHolder->getPositionName())) {
+            $q->andWhere($q->expr()->like('employee.positionName', ':positionName'))
+                ->setParameter('positionName', '%' . $employeeSearchParamHolder->getPositionName() . '%');
+        }
+
         if (!is_null($employeeSearchParamHolder->getEmployeeNumbers())) {
             $q->andWhere($q->expr()->in('employee.empNumber', ':empNumbers'))
                 ->setParameter('empNumbers', $employeeSearchParamHolder->getEmployeeNumbers());

@@ -55,6 +55,7 @@ class EmployeeAPI extends Endpoint implements CrudEndpoint
     public const FILTER_INCLUDE_EMPLOYEES = 'includeEmployees';
     public const FILTER_EMP_STATUS_ID = 'empStatusId';
     public const FILTER_JOB_TITLE_ID = 'jobTitleId';
+    public const FILTER_POSITION_NAME = 'positionName';
     public const FILTER_SUBUNIT_ID = 'subunitId';
     public const FILTER_SUPERVISOR_EMP_NUMBERS = 'supervisorEmpNumbers';
     public const FILTER_MODEL = 'model';
@@ -341,6 +342,12 @@ class EmployeeAPI extends Endpoint implements CrudEndpoint
                 self::FILTER_JOB_TITLE_ID
             )
         );
+        $employeeParamHolder->setPositionName(
+            $this->getRequestParams()->getStringOrNull(
+                RequestParams::PARAM_TYPE_QUERY,
+                self::FILTER_POSITION_NAME
+            )
+        );
         $employeeParamHolder->setSubunitId(
             $this->getRequestParams()->getIntOrNull(
                 RequestParams::PARAM_TYPE_QUERY,
@@ -420,6 +427,13 @@ class EmployeeAPI extends Endpoint implements CrudEndpoint
                 new ParamRule(
                     self::FILTER_JOB_TITLE_ID,
                     new Rule(Rules::POSITIVE),
+                )
+            ),
+            $this->getValidationDecorator()->notRequiredParamRule(
+                new ParamRule(
+                    self::FILTER_POSITION_NAME,
+                    new Rule(Rules::STRING_TYPE),
+                    new Rule(Rules::LENGTH, [null, 100]),
                 )
             ),
             $this->getValidationDecorator()->notRequiredParamRule(

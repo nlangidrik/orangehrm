@@ -21,7 +21,10 @@ namespace OrangeHRM\Core\Import;
 use DateTime;
 use Exception;
 use OrangeHRM\Admin\Service\CountryService;
+use OrangeHRM\Admin\Service\EmploymentStatusService;
+use OrangeHRM\Admin\Service\JobTitleService;
 use OrangeHRM\Admin\Service\NationalityService;
+use OrangeHRM\Admin\Traits\Service\CompanyStructureServiceTrait;
 use OrangeHRM\Core\Api\V2\Validator\Rules\Email;
 use OrangeHRM\Core\Api\V2\Validator\Rules\Phone;
 use OrangeHRM\Core\Traits\LoggerTrait;
@@ -29,11 +32,19 @@ use OrangeHRM\Core\Traits\Service\TextHelperTrait;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Entity\Country;
 use OrangeHRM\Entity\Employee;
+use OrangeHRM\Entity\EmploymentStatus;
+use OrangeHRM\Entity\JobTitle;
 use OrangeHRM\Entity\Nationality;
 use OrangeHRM\Entity\Province;
+use OrangeHRM\Entity\Subunit;
 use OrangeHRM\Framework\Services;
+use OrangeHRM\Pim\Dao\EmployeeReportingMethodDao;
+use OrangeHRM\Pim\Dto\ReportingMethodSearchFilterParams;
 use OrangeHRM\Pim\Service\EmployeeService;
+use OrangeHRM\Pim\Service\ReportingMethodConfigurationService;
 use OrangeHRM\Pim\Traits\Service\EmployeeServiceTrait;
+use OrangeHRM\Entity\ReportTo;
+use OrangeHRM\Entity\ReportingMethod;
 
 class PimCsvDataImport extends CsvDataImport
 {
@@ -41,11 +52,22 @@ class PimCsvDataImport extends CsvDataImport
     use EmployeeServiceTrait;
     use LoggerTrait;
     use TextHelperTrait;
+    use CompanyStructureServiceTrait;
 
     /**
      * @var null|NationalityService
      */
     protected ?NationalityService $nationalityService = null;
+
+    /**
+     * @var null|JobTitleService
+     */
+    protected ?JobTitleService $jobTitleService = null;
+
+    /**
+     * @var null|EmploymentStatusService
+     */
+    protected ?EmploymentStatusService $employmentStatusService = null;
 
     /**
      * @param array $data
@@ -62,21 +84,43 @@ class PimCsvDataImport extends CsvDataImport
             || $this->getTextHelper()->strLength($lastName) > EmployeeService::LAST_NAME_MAX_LENGTH) {
             return false;
         }
-        for ($i = 3; $i < 23; $i++) {
+        // Support up to 33 columns (22 original + 11 new: job_title, employment_status, sub_unit, position, supervisor_employee_id, joined_date, ssn_number, sin_number, nick_name, smoker, military_service)
+        // Increased from 27 to 33 columns to support additional fields
+        for ($i = 3; $i < 33; $i++) {
             if (!isset($data[$i])) {
                 $data[$i] = null;
             }
         }
-        $employee = new Employee();
+        
+        $employeeId = $data[3];
+        
+        // Check if employee already exists by employee_id - if so, update instead of create
+        $employee = null;
+        $isNewEmployee = true;
+        if (!$this->isEmpty($employeeId) && $this->getTextHelper()->strLength($employeeId) <= EmployeeService::EMPLOYEE_ID_MAX_LENGTH) {
+            $existingEmployee = $this->getEmployeeByEmployeeId($employeeId);
+            if ($existingEmployee !== null) {
+                $employee = $existingEmployee;
+                $isNewEmployee = false;
+                $this->getLogger()->info("Updating existing employee with employee_id: {$employeeId}");
+            }
+        }
+        
+        // Create new employee if not found
+        if ($employee === null) {
+            $employee = new Employee();
+            $isNewEmployee = true;
+        }
+        
         $employee->setFirstName($firstName);
         if ($this->getTextHelper()->strLength($middleName) <= EmployeeService::MIDDLE_NAME_MAX_LENGTH) {
             $employee->setMiddleName($middleName);
         }
         $employee->setLastName($lastName);
 
-        $employeeId = $data[3];
         if ($this->getTextHelper()->strLength($employeeId) <= EmployeeService::EMPLOYEE_ID_MAX_LENGTH) {
-            if (!$this->isUniqueEmployeeId($employeeId)) {
+            // Only check uniqueness if this is a new employee
+            if ($isNewEmployee && !$this->isUniqueEmployeeId($employeeId)) {
                 $this->getLogger()->warning('Employee record not imported due to duplicated employee_id');
                 return false;
             }
@@ -169,7 +213,73 @@ class PimCsvDataImport extends CsvDataImport
             $employee->setOtherEmail($otherEmail);
         }
 
+        // Handle new fields: job_title (22), employment_status (23), sub_unit (24), position (25), supervisor_employee_id (26)
+        $jobTitle = $this->getJobTitleIfValid($data[22]);
+        if ($jobTitle !== null) {
+            $employee->setJobTitle($jobTitle);
+        }
+
+        $empStatus = $this->getEmploymentStatusIfValid($data[23]);
+        if ($empStatus !== null) {
+            $employee->setEmpStatus($empStatus);
+        }
+
+        $subunit = $this->getSubunitIfValid($data[24]);
+        if ($subunit !== null) {
+            $employee->setSubDivision($subunit);
+        }
+
+        if ($this->getTextHelper()->strLength($data[25]) <= 100) {
+            $employee->setPositionName($data[25]);
+        }
+
+        // Handle joined_date (column 27) - set before saving
+        $joinedDate = $this->getDateTimeIfValid($data[27]);
+        if ($joinedDate !== null) {
+            $employee->setJoinedDate($joinedDate);
+        }
+
+        // Handle ssn_number (column 28)
+        if ($this->getTextHelper()->strLength($data[28]) <= 100) {
+            $employee->setSsnNumber($data[28]);
+        }
+
+        // Handle sin_number (column 29)
+        if ($this->getTextHelper()->strLength($data[29]) <= 100) {
+            $employee->setSinNumber($data[29]);
+        }
+
+        // Handle nick_name (column 30)
+        if ($this->getTextHelper()->strLength($data[30]) <= 100) {
+            $employee->setNickName($data[30]);
+        }
+
+        // Handle smoker (column 31) - accepts "yes", "no", "1", "0", "true", "false"
+        if (!$this->isEmpty($data[31])) {
+            $smokerValue = strtolower(trim($data[31]));
+            if (in_array($smokerValue, ['yes', '1', 'true', 'y'])) {
+                $employee->setSmoker(1);
+            } elseif (in_array($smokerValue, ['no', '0', 'false', 'n', ''])) {
+                $employee->setSmoker(0);
+            }
+        }
+
+        // Handle military_service (column 32)
+        if ($this->getTextHelper()->strLength($data[32]) <= 100) {
+            $employee->setMilitaryService($data[32]);
+        }
+
         $this->getEmployeeService()->saveEmployee($employee);
+
+        // Handle supervisor after employee is saved (requires empNumber)
+        if (!$this->isEmpty($data[26])) {
+            $supervisorEmployee = $this->getEmployeeByEmployeeId($data[26]);
+            if ($supervisorEmployee !== null && $supervisorEmployee->getEmpNumber() !== $employee->getEmpNumber()) {
+                // Set supervisor relationship - using default reporting method (Direct)
+                $this->setSupervisor($employee, $supervisorEmployee);
+            }
+        }
+
         return true;
     }
 
@@ -309,5 +419,149 @@ class PimCsvDataImport extends CsvDataImport
     private function isEmpty(?string $string): bool
     {
         return $string === null || $string === '';
+    }
+
+    /**
+     * @param string|null $name
+     * @return JobTitle|null
+     */
+    private function getJobTitleIfValid(?string $name): ?JobTitle
+    {
+        if ($this->isEmpty($name)) {
+            return null;
+        }
+        $jobTitleList = $this->getJobTitleService()->getJobTitleList(false);
+        foreach ($jobTitleList as $jobTitle) {
+            if (strcasecmp($jobTitle->getJobTitleName(), $name) === 0) {
+                return $jobTitle;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return JobTitleService
+     */
+    public function getJobTitleService(): JobTitleService
+    {
+        return $this->jobTitleService ??= new JobTitleService();
+    }
+
+    /**
+     * @param JobTitleService $jobTitleService
+     */
+    public function setJobTitleService(JobTitleService $jobTitleService): void
+    {
+        $this->jobTitleService = $jobTitleService;
+    }
+
+    /**
+     * @param string|null $name
+     * @return EmploymentStatus|null
+     */
+    private function getEmploymentStatusIfValid(?string $name): ?EmploymentStatus
+    {
+        if ($this->isEmpty($name)) {
+            return null;
+        }
+        $empStatusList = $this->getEmploymentStatusService()->getEmploymentStatusDao()->getEmploymentStatuses();
+        foreach ($empStatusList as $empStatus) {
+            if (strcasecmp($empStatus->getName(), $name) === 0) {
+                return $empStatus;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return EmploymentStatusService
+     */
+    public function getEmploymentStatusService(): EmploymentStatusService
+    {
+        return $this->employmentStatusService ??= new EmploymentStatusService();
+    }
+
+    /**
+     * @param EmploymentStatusService $employmentStatusService
+     */
+    public function setEmploymentStatusService(EmploymentStatusService $employmentStatusService): void
+    {
+        $this->employmentStatusService = $employmentStatusService;
+    }
+
+    /**
+     * @param string|null $name
+     * @return Subunit|null
+     */
+    private function getSubunitIfValid(?string $name): ?Subunit
+    {
+        if ($this->isEmpty($name)) {
+            return null;
+        }
+        $subunitTree = $this->getCompanyStructureService()->getSubunitTree();
+        foreach ($subunitTree as $subunit) {
+            if (strcasecmp($subunit->getName(), $name) === 0) {
+                return $subunit;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param string|null $employeeId
+     * @return Employee|null
+     */
+    private function getEmployeeByEmployeeId(?string $employeeId): ?Employee
+    {
+        if ($this->isEmpty($employeeId)) {
+            return null;
+        }
+        $searchParams = new \OrangeHRM\Pim\Dto\EmployeeSearchFilterParams();
+        $searchParams->setEmployeeId($employeeId);
+        $employees = $this->getEmployeeService()->getEmployeeList($searchParams);
+        if (count($employees) > 0) {
+            return $employees[0];
+        }
+        return null;
+    }
+
+    /**
+     * @param Employee $employee
+     * @param Employee $supervisor
+     * @return void
+     */
+    private function setSupervisor(Employee $employee, Employee $supervisor): void
+    {
+        try {
+            // Get default reporting method (Direct = 1, typically)
+            $reportingMethodService = new ReportingMethodConfigurationService();
+            $searchParams = new ReportingMethodSearchFilterParams();
+            $reportingMethods = $reportingMethodService->getReportingMethodList($searchParams);
+            $defaultReportingMethod = null;
+            if (count($reportingMethods) > 0) {
+                // Try to find "Direct" reporting method, otherwise use first one
+                foreach ($reportingMethods as $method) {
+                    if (strcasecmp($method->getName(), 'Direct') === 0) {
+                        $defaultReportingMethod = $method;
+                        break;
+                    }
+                }
+                if ($defaultReportingMethod === null) {
+                    $defaultReportingMethod = $reportingMethods[0];
+                }
+            }
+
+            if ($defaultReportingMethod !== null) {
+                $reportTo = new ReportTo();
+                $reportTo->setSupervisor($supervisor);
+                $reportTo->setSubordinate($employee);
+                $reportTo->setReportingMethod($defaultReportingMethod);
+
+                $reportingMethodDao = new EmployeeReportingMethodDao();
+                $reportingMethodDao->saveEmployeeReportTo($reportTo);
+            }
+        } catch (\Exception $e) {
+            $this->getLogger()->warning('Failed to set supervisor: ' . $e->getMessage());
+        }
     }
 }

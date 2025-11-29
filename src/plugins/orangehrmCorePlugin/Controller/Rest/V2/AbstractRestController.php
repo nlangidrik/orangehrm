@@ -138,7 +138,9 @@ abstract class AbstractRestController extends AbstractController
         try {
             $validationRule = $this->getValidationRule($request);
             if ($validationRule instanceof ParamRuleCollection) {
+                $this->getLogger()->error('Validating parameters for ' . $httpRequest->getMethod() . ' request');
                 Validator::validate($request->getAllParameters(), $validationRule);
+                $this->getLogger()->error('Validation passed');
             }
             switch ($httpRequest->getMethod()) {
                 case Request::METHOD_GET:
@@ -146,6 +148,7 @@ abstract class AbstractRestController extends AbstractController
                     break;
 
                 case Request::METHOD_POST:
+                    $this->getLogger()->error('Calling handlePostRequest');
                     $response->setContent($this->handlePostRequest($request)->formatData());
                     break;
 
@@ -198,15 +201,36 @@ abstract class AbstractRestController extends AbstractController
             );
             $response->setStatusCode(501);
         } catch (BadRequestException $e) {
-            $this->getLogger()->info($e->getMessage());
-            $this->getLogger()->info($e->getTraceAsString());
+            $errorMessage = $e->getMessage();
+            $this->getLogger()->error('BadRequestException caught: ' . $errorMessage);
+            $this->getLogger()->error('BadRequestException trace: ' . $e->getTraceAsString());
+            
+            // For CSV validation errors, ALWAYS preserve the original message
+            // CSV errors start with "CSV VALIDATION ERROR:" or contain specific keywords
+            $isCsvError = (
+                stripos($errorMessage, 'CSV VALIDATION ERROR') !== false ||
+                stripos($errorMessage, 'csv file is not valid') !== false ||
+                stripos($errorMessage, 'column') !== false ||
+                stripos($errorMessage, 'row') !== false ||
+                stripos($errorMessage, 'header') !== false
+            );
+            
+            if ($isCsvError) {
+                // CSV error - NEVER translate, always use original message
+                $finalMessage = $errorMessage;
+            } else {
+                // Other errors - can be translated
+                $finalMessage = $this->getI18NHelper()->transBySource($errorMessage);
+            }
+            
+            $this->getLogger()->error('Final message: ' . $finalMessage);
 
             $response->setContent(
                 Response::formatError(
                     [
                         'error' => [
                             'status' => '400',
-                            'message' => $this->getI18NHelper()->transBySource($e->getMessage())
+                            'message' => $finalMessage
                         ]
                     ]
                 )

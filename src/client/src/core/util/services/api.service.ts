@@ -148,7 +148,20 @@ export class APIService {
         const $toast = vm?.appContext.config.globalProperties.$toast;
         if ($toast && error.code !== 'ECONNABORTED') {
           const response = error.response?.data;
-          $toast.unexpectedError(response?.error.message || null);
+          // Try to extract error message from different response structures
+          let errorMessage: string | null = null;
+          if (response) {
+            if (response.error?.message) {
+              errorMessage = response.error.message;
+            } else if (typeof response.error === 'string') {
+              errorMessage = response.error;
+            } else if ((response as any).message) {
+              errorMessage = (response as any).message;
+            } else if (typeof response === 'string') {
+              errorMessage = response;
+            }
+          }
+          $toast.unexpectedError(errorMessage);
         }
         return Promise.reject(error);
       },

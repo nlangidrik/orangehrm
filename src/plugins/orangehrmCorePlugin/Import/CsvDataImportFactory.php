@@ -23,12 +23,16 @@ class CsvDataImportFactory
 {
     /**
      * @param string $importType
-     * @return PimCsvDataImport|void
+     * @return CsvDataImport
      */
-    public function getImportClassInstance(string $importType): PimCsvDataImport
+    public function getImportClassInstance(string $importType): CsvDataImport
     {
         if ($importType == 'pim') {
             return new PimCsvDataImport();
         }
+        if ($importType == 'jobtitle') {
+            return new JobTitleCsvDataImport();
+        }
+        throw new \InvalidArgumentException("Unknown import type: $importType");
     }
 }
