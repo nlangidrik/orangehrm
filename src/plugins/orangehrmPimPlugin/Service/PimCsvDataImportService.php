@@ -55,7 +55,6 @@ class PimCsvDataImportService
         "ssn_number",
         "sin_number",
         "nick_name",
-        "smoker",
         "military_service"
     ];
 

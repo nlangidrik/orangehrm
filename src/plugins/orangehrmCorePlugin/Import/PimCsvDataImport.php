@@ -84,9 +84,9 @@ class PimCsvDataImport extends CsvDataImport
             || $this->getTextHelper()->strLength($lastName) > EmployeeService::LAST_NAME_MAX_LENGTH) {
             return false;
         }
-        // Support up to 33 columns (22 original + 11 new: job_title, employment_status, sub_unit, position, supervisor_employee_id, joined_date, ssn_number, sin_number, nick_name, smoker, military_service)
-        // Increased from 27 to 33 columns to support additional fields
-        for ($i = 3; $i < 33; $i++) {
+        // Support up to 32 columns (22 original + 10 new: job_title, employment_status, sub_unit, position, supervisor_employee_id, joined_date, ssn_number, sin_number, nick_name, military_service)
+        // Removed "smoker" column - now 32 columns total
+        for ($i = 3; $i < 32; $i++) {
             if (!isset($data[$i])) {
                 $data[$i] = null;
             }
@@ -254,19 +254,9 @@ class PimCsvDataImport extends CsvDataImport
             $employee->setNickName($data[30]);
         }
 
-        // Handle smoker (column 31) - accepts "yes", "no", "1", "0", "true", "false"
-        if (!$this->isEmpty($data[31])) {
-            $smokerValue = strtolower(trim($data[31]));
-            if (in_array($smokerValue, ['yes', '1', 'true', 'y'])) {
-                $employee->setSmoker(1);
-            } elseif (in_array($smokerValue, ['no', '0', 'false', 'n', ''])) {
-                $employee->setSmoker(0);
-            }
-        }
-
-        // Handle military_service (column 32)
-        if ($this->getTextHelper()->strLength($data[32]) <= 100) {
-            $employee->setMilitaryService($data[32]);
+        // Handle military_service (column 31 - moved up after removing smoker)
+        if ($this->getTextHelper()->strLength($data[31]) <= 100) {
+            $employee->setMilitaryService($data[31]);
         }
 
         $this->getEmployeeService()->saveEmployee($employee);
