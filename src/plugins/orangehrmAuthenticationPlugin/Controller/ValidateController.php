@@ -31,6 +31,7 @@ use OrangeHRM\Core\Controller\AbstractController;
 use OrangeHRM\Core\Controller\PublicControllerInterface;
 use OrangeHRM\Core\Exception\RedirectableException;
 use OrangeHRM\Core\Traits\Auth\AuthUserTrait;
+use OrangeHRM\Core\Traits\LoggerTrait;
 use OrangeHRM\Core\Traits\ServiceContainerTrait;
 use OrangeHRM\Framework\Http\RedirectResponse;
 use OrangeHRM\Framework\Http\Request;
@@ -44,6 +45,7 @@ class ValidateController extends AbstractController implements PublicControllerI
     use ServiceContainerTrait;
     use CsrfTokenManagerTrait;
     use SessionHandlingTrait;
+    use LoggerTrait;
 
     public const PARAMETER_USERNAME = 'username';
     public const PARAMETER_PASSWORD = 'password';
@@ -112,6 +114,11 @@ class ValidateController extends AbstractController implements PublicControllerI
             }
             return new RedirectResponse($loginUrl);
         } catch (Throwable $e) {
+            // Log the actual exception for debugging
+            $this->getLogger()->error('Login error: ' . $e->getMessage());
+            $this->getLogger()->error('Exception type: ' . get_class($e));
+            $this->getLogger()->error('Stack trace: ' . $e->getTraceAsString());
+            
             $this->getAuthUser()->addFlash(
                 AuthUser::FLASH_LOGIN_ERROR,
                 [

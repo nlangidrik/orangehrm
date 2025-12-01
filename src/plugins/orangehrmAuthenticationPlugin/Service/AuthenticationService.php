@@ -45,7 +45,12 @@ class AuthenticationService
                 throw AuthenticationException::userDisabled();
             } elseif ($user->getEmpNumber() === null) {
                 throw AuthenticationException::employeeNotAssigned();
-            } elseif ($user->getEmployee()->getEmployeeTerminationRecord() instanceof EmployeeTerminationRecord) {
+            }
+            
+            $employee = $user->getEmployee();
+            if (!$employee instanceof Employee) {
+                throw AuthenticationException::employeeNotAssigned();
+            } elseif ($employee->getEmployeeTerminationRecord() instanceof EmployeeTerminationRecord) {
                 throw AuthenticationException::employeeTerminated();
             }
 
