@@ -47,6 +47,10 @@ services:
       - orangehrm_log:/var/www/html/src/log
       # Persist uploaded files and user data
       - orangehrm_data:/var/www/html/src/plugins/orangehrmCorePlugin/data
+      # Persist employee photos
+      - orangehrm_uploads_photos:/var/www/html/src/plugins/orangehrmPimPlugin/public/webroot/photos
+      # Persist all file uploads and attachments
+      - orangehrm_uploads:/var/www/html/src/uploads
     ports:
       - "8080:80"
     networks:
@@ -90,6 +94,10 @@ volumes:
   orangehrm_log:
     driver: local
   orangehrm_data:
+    driver: local
+  orangehrm_uploads_photos:
+    driver: local
+  orangehrm_uploads:
     driver: local
   redis_data:
     driver: local

@@ -8,21 +8,67 @@
     visibility: hidden !important;
 }
 
-/* Replace OrangeHRM logo with PSS logo */
-.oxd-brand-banner img,
-.oxd-brand-banner,
-.orangehrm-login-branding img {
-    content: url('/images/logo.png') !important;
-    max-height: 60px !important;
+/* Full logo at the top of the page (topbar banner) */
+.oxd-topbar-header .oxd-brand-banner img,
+.oxd-topbar-header .oxd-brand-banner,
+.oxd-topbar-header img[src*="clientBanner"],
+.oxd-topbar-header img[src*="clientLogo"] {
+    content: url('/web/images/logo.png') !important;
+    max-height: 80px !important;
+    max-width: 400px !important;
     width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
 }
 
-/* Sidebar logo when collapsed */
+/* Sidebar - force ALL images to use client banner (182x50px) */
+.oxd-sidepanel-header .oxd-brand-banner img,
+.oxd-sidepanel-header .oxd-brand-banner img[src*="clientBanner"],
+.oxd-sidepanel-header .oxd-brand-banner img[src*="clientLogo"],
+.oxd-sidepanel-header .oxd-brand-banner img[src*="orange.png"],
+.oxd-sidepanel-header .oxd-brand-banner img[src*="orangehrm"] {
+    content: url('/web/images/logo.png') !important;
+    width: 182px !important;
+    height: 50px !important;
+    max-width: 182px !important;
+    max-height: 50px !important;
+    min-width: 182px !important;
+    min-height: 50px !important;
+    object-fit: contain !important;
+    border-radius: 0 !important;
+    display: block !important;
+}
+
+/* Sidebar logo container - left align, don't center */
+.oxd-sidepanel-header .oxd-brand-banner {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    min-height: 74px !important;
+    box-sizing: border-box !important;
+}
+
+/* Sidebar logo when collapsed - show circular only */
 .oxd-sidepanel-header--collapsed .oxd-brand-banner img {
-    content: url('/images/logo.png') !important;
+    content: url('/web/images/logo.png') !important;
     width: 40px !important;
     height: 40px !important;
-    border-radius: 50%;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+}
+
+/* Login page branding */
+.orangehrm-login-branding img {
+    content: url('/web/images/logo.png') !important;
+    max-height: 100px !important;
+    max-width: 400px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
 }
 
 /* Customize branding colors for PSS */
