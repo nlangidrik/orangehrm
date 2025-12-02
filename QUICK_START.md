@@ -44,39 +44,39 @@ When you first access the application, you'll see the OrangeHRM installer.
 
 ### View Running Containers
 ```bash
-docker-compose -f docker-compose.simple.yml ps
+docker compose ps
 ```
 
 ### View Logs
 ```bash
 # All logs
-docker-compose -f docker-compose.simple.yml logs -f
+docker compose logs -f
 
 # Only OrangeHRM logs
-docker-compose -f docker-compose.simple.yml logs -f orangehrm
+docker compose logs -f orangehrm
 
 # Only MySQL logs
-docker-compose -f docker-compose.simple.yml logs -f mysql
+docker compose logs -f mysql
 ```
 
 ### Stop the Application
 ```bash
-docker-compose -f docker-compose.simple.yml down
+docker compose down
 ```
 
 ### Start the Application
 ```bash
-docker-compose -f docker-compose.simple.yml up -d
+docker compose up -d
 ```
 
 ### Restart the Application
 ```bash
-docker-compose -f docker-compose.simple.yml restart
+docker compose restart
 ```
 
 ### Stop and Remove All Data (⚠️ Warning: This will delete all data!)
 ```bash
-docker-compose -f docker-compose.simple.yml down -v
+docker compose down -v
 ```
 
 ## 🗄️ Database Information
@@ -99,43 +99,43 @@ docker exec -it orangehrm_mysql mysql -u orangehrm -porangehrm123 orangehrm_mysq
 
 1. Check if containers are running:
    ```bash
-   docker-compose -f docker-compose.simple.yml ps
+   docker compose ps
    ```
 
 2. View error logs:
    ```bash
-   docker-compose -f docker-compose.simple.yml logs orangehrm
+   docker compose logs orangehrm
    ```
 
 3. Restart the application:
    ```bash
-   docker-compose -f docker-compose.simple.yml restart
+   docker compose restart
    ```
 
 ### Database Connection Issues
 
 1. Check MySQL is healthy:
    ```bash
-   docker-compose -f docker-compose.simple.yml ps mysql
+   docker compose ps mysql
    ```
 
 2. Wait for MySQL to be fully ready (may take 30-60 seconds on first start)
 
 3. Check MySQL logs:
    ```bash
-   docker-compose -f docker-compose.simple.yml logs mysql
+   docker compose logs mysql
    ```
 
 ### Port Already in Use
 
-If port 8080 or 3306 is already in use, edit `docker-compose.simple.yml`:
+If port 8080 or 3306 is already in use, edit `docker-compose.yml`:
 - Change `8080:80` to `9090:80` (or another available port)
 - Change `3306:3306` to `3307:3306` (or another available port)
 
 Then restart:
 ```bash
-docker-compose -f docker-compose.simple.yml down
-docker-compose -f docker-compose.simple.yml up -d
+docker compose down
+docker compose up -d
 ```
 
 ## 📁 Data Persistence

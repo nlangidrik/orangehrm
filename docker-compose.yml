@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # MySQL Database
   mysql:
@@ -53,23 +51,6 @@ services:
       - orangehrm_uploads:/var/www/html/src/uploads
     ports:
       - "8080:80"
-    networks:
-      - orangehrm_network
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: orangehrm_nginx
-    restart: unless-stopped
-    depends_on:
-      - orangehrm
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./ssl:/etc/nginx/ssl
     networks:
       - orangehrm_network
 
