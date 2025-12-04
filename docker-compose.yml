@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-orangehrm_mysql}
       MYSQL_USER: ${MYSQL_USER:-orangehrm}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-orangehrm123}
+      MYSQL_PASSWORD: ${OHRM_DB_PASSWORD:-${MYSQL_PASSWORD:-orangehrm123}}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
@@ -29,14 +29,14 @@ services:
     environment:
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
-      - DB_USER=${MYSQL_USER:-orangehrm}
-      - DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
-      - OHRM_DB_HOST=mysql
-      - OHRM_DB_PORT=3306
-      - OHRM_DB_NAME=${MYSQL_DATABASE:-orangehrm_mysql}
-      - OHRM_DB_USER=${MYSQL_USER:-orangehrm}
-      - OHRM_DB_PASSWORD=${MYSQL_PASSWORD:-orangehrm123}
+      - DB_NAME=${OHRM_DB_NAME:-${MYSQL_DATABASE:-orangehrm_mysql}}
+      - DB_USER=${OHRM_DB_USER:-${MYSQL_USER:-orangehrm}}
+      - DB_PASSWORD=${OHRM_DB_PASSWORD:-${MYSQL_PASSWORD:-orangehrm123}}
+      - OHRM_DB_HOST=${OHRM_DB_HOST:-mysql}
+      - OHRM_DB_PORT=${OHRM_DB_PORT:-3306}
+      - OHRM_DB_NAME=${OHRM_DB_NAME:-${MYSQL_DATABASE:-orangehrm_mysql}}
+      - OHRM_DB_USER=${OHRM_DB_USER:-${MYSQL_USER:-orangehrm}}
+      - OHRM_DB_PASSWORD=${OHRM_DB_PASSWORD:-${MYSQL_PASSWORD:-orangehrm123}}
     volumes:
       # Persist configuration (this is where Conf.php gets created after installation)
       - orangehrm_config:/var/www/html/lib/confs
