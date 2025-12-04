@@ -1,7 +1,9 @@
 services:
   # MySQL Database
+  # Using MariaDB for better compatibility with older CPUs
+  # If you prefer MySQL, try: mysql:8.0.33 or mysql:8.0.32
   mysql:
-    image: mysql:8.0
+    image: mariadb:10.11
     container_name: orangehrm_mysql
     restart: unless-stopped
     environment:
