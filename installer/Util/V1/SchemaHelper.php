@@ -159,7 +159,29 @@ class SchemaHelper
      */
     public function renameColumn(string $tableName, string $currentColumnName, string $newColumnName): void
     {
-        $column = $this->getTableColumn($tableName, $currentColumnName);
+        // Remove backticks if present for column name lookup
+        $cleanColumnName = trim($currentColumnName, '`');
+        
+        $column = $this->getTableColumn($tableName, $cleanColumnName);
+        
+        // Check if column exists and if it's already renamed
+        if ($column === null) {
+            // Column doesn't exist - check if new column name already exists
+            if ($this->columnExists($tableName, $newColumnName)) {
+                // Column already renamed, skip
+                return;
+            }
+            throw new \InvalidArgumentException(
+                "Column '{$cleanColumnName}' does not exist in table '{$tableName}'"
+            );
+        }
+        
+        // Check if column is already renamed
+        if ($this->columnExists($tableName, $newColumnName)) {
+            // Already renamed, skip
+            return;
+        }
+        
         $newColumn = new Column($newColumnName, $column->getType(), [
             'Length' => $column->getLength(),
             'Precision' => $column->getPrecision(),
