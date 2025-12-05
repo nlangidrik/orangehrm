@@ -32,7 +32,13 @@ class Migration extends AbstractMigration
      */
     public function up(): void
     {
-        $this->getSchemaHelper()->renameColumn('hs_hr_config', '`key`', 'name');
+        // Rename 'key' column to 'name' if it exists and 'name' doesn't exist yet
+        // This handles cases where the column was already renamed in a previous migration attempt
+        if ($this->getSchemaHelper()->columnExists('hs_hr_config', 'key') && 
+            !$this->getSchemaHelper()->columnExists('hs_hr_config', 'name')) {
+            $this->getSchemaHelper()->renameColumn('hs_hr_config', '`key`', 'name');
+        }
+        // If 'name' column already exists, the rename was already done - skip it
         $this->getSchemaHelper()->addColumn('ohrm_menu_item', '`additional_params`', Types::TEXT, [
             'Notnull' => false,
             'Default' => null,
