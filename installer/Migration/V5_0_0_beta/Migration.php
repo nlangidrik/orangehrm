@@ -39,16 +39,17 @@ class Migration extends AbstractMigration
         $connection = $this->getConnection();
         
         // Check if 'name' column already exists
-        $nameExists = $connection->executeQuery(
+        // Use explicit integer cast to avoid loose equality issues (false == 0, null == 0)
+        $nameExists = (int) $connection->executeQuery(
             "SELECT COUNT(*) FROM information_schema.COLUMNS 
              WHERE TABLE_SCHEMA = DATABASE() 
              AND TABLE_NAME = 'hs_hr_config' 
              AND COLUMN_NAME = 'name'"
         )->fetchOne();
         
-        if ($nameExists == 0) {
+        if ($nameExists === 0) {
             // Check if 'key' column exists using direct SQL (more reliable for reserved words)
-            $keyExists = $connection->executeQuery(
+            $keyExists = (int) $connection->executeQuery(
                 "SELECT COUNT(*) FROM information_schema.COLUMNS 
                  WHERE TABLE_SCHEMA = DATABASE() 
                  AND TABLE_NAME = 'hs_hr_config' 
