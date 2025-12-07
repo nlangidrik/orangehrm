@@ -34,9 +34,33 @@ class Migration extends AbstractMigration
     {
         // Rename 'key' column to 'name' if it exists and 'name' doesn't exist yet
         // This handles cases where the column was already renamed in a previous migration attempt
-        if ($this->getSchemaHelper()->columnExists('hs_hr_config', 'key') && 
-            !$this->getSchemaHelper()->columnExists('hs_hr_config', 'name')) {
-            $this->getSchemaHelper()->renameColumn('hs_hr_config', '`key`', 'name');
+        // Note: 'key' is a MySQL reserved word, so we need to handle it carefully
+        // Use direct SQL to check column existence for better reliability with reserved words
+        $connection = $this->getConnection();
+        
+        // Check if 'name' column already exists
+        $nameExists = $connection->executeQuery(
+            "SELECT COUNT(*) FROM information_schema.COLUMNS 
+             WHERE TABLE_SCHEMA = DATABASE() 
+             AND TABLE_NAME = 'hs_hr_config' 
+             AND COLUMN_NAME = 'name'"
+        )->fetchOne();
+        
+        if ($nameExists == 0) {
+            // Check if 'key' column exists using direct SQL (more reliable for reserved words)
+            $keyExists = $connection->executeQuery(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS 
+                 WHERE TABLE_SCHEMA = DATABASE() 
+                 AND TABLE_NAME = 'hs_hr_config' 
+                 AND COLUMN_NAME = 'key'"
+            )->fetchOne();
+            
+            if ($keyExists > 0) {
+                // Use direct SQL to rename the column (avoids Doctrine DBAL reserved word issues)
+                $connection->executeStatement(
+                    "ALTER TABLE hs_hr_config CHANGE `key` name VARCHAR(100) NOT NULL DEFAULT ''"
+                );
+            }
         }
         // If 'name' column already exists, the rename was already done - skip it
         $this->getSchemaHelper()->addColumn('ohrm_menu_item', '`additional_params`', Types::TEXT, [
