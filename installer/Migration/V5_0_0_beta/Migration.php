@@ -63,11 +63,15 @@ class Migration extends AbstractMigration
             }
         }
         // If 'name' column already exists, the rename was already done - skip it
-        $this->getSchemaHelper()->addColumn('ohrm_menu_item', '`additional_params`', Types::TEXT, [
-            'Notnull' => false,
-            'Default' => null,
-            'Comment' => '(DC2Type:json)',
-        ]);
+        
+        // Add additional_params column if it doesn't exist (handles partial migration runs)
+        if (!$this->getSchemaHelper()->columnExists('ohrm_menu_item', 'additional_params')) {
+            $this->getSchemaHelper()->addColumn('ohrm_menu_item', '`additional_params`', Types::TEXT, [
+                'Notnull' => false,
+                'Default' => null,
+                'Comment' => '(DC2Type:json)',
+            ]);
+        }
         $this->updateHomePage('Admin', 'pim/viewPimModule');
         $this->updateHomePage('ESS', 'pim/viewPimModule');
 
@@ -145,18 +149,23 @@ class Migration extends AbstractMigration
             ->setPrimaryKey(['id'])
             ->create();
 
-        $this->getSchemaHelper()->addColumn(
-            'ohrm_display_field',
-            'class_name',
-            Types::STRING,
-            ['Length' => 255, 'Notnull' => false, 'Default' => null]
-        );
-        $this->getSchemaHelper()->addColumn(
-            'ohrm_filter_field',
-            'class_name',
-            Types::STRING,
-            ['Length' => 255, 'Notnull' => false, 'Default' => null]
-        );
+        // Add class_name columns if they don't exist (handles partial migration runs)
+        if (!$this->getSchemaHelper()->columnExists('ohrm_display_field', 'class_name')) {
+            $this->getSchemaHelper()->addColumn(
+                'ohrm_display_field',
+                'class_name',
+                Types::STRING,
+                ['Length' => 255, 'Notnull' => false, 'Default' => null]
+            );
+        }
+        if (!$this->getSchemaHelper()->columnExists('ohrm_filter_field', 'class_name')) {
+            $this->getSchemaHelper()->addColumn(
+                'ohrm_filter_field',
+                'class_name',
+                Types::STRING,
+                ['Length' => 255, 'Notnull' => false, 'Default' => null]
+            );
+        }
 
         $this->updateReportDisplayFieldByGroup(
             'Personal',
