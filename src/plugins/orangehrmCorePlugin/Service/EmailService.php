@@ -19,6 +19,7 @@
 namespace OrangeHRM\Core\Service;
 
 use OrangeHRM\Admin\Service\EmailConfigurationService;
+use OrangeHRM\Admin\Service\OrganizationService;
 use OrangeHRM\Config\Config;
 use OrangeHRM\Core\Dao\EmailDao;
 use OrangeHRM\Core\Exception\CoreServiceException;
@@ -119,6 +120,11 @@ class EmailService
      * @var EmailConfigurationService|null
      */
     private ?EmailConfigurationService $emailConfigurationService = null;
+
+    /**
+     * @var OrganizationService|null
+     */
+    private ?OrganizationService $organizationService = null;
 
     public function __construct()
     {
@@ -347,7 +353,8 @@ class EmailService
 
         if (empty($this->messageFrom)) {
             $this->validateEmailAddress($this->getEmailConfig()->getSentAs());
-            $this->messageFrom = [$this->getEmailConfig()->getSentAs() => "OrangeHRM"];
+            $senderName = $this->getOrganizationName();
+            $this->messageFrom = [$this->getEmailConfig()->getSentAs() => $senderName];
         }
 
         if (empty($this->messageTo)) {
@@ -657,5 +664,36 @@ class EmailService
         }
 
         return file_get_contents($path);
+    }
+
+    /**
+     * Get organization name for email sender
+     *
+     * @return string
+     */
+    protected function getOrganizationName(): string
+    {
+        try {
+            $organizationService = $this->getOrganizationService();
+            $organization = $organizationService->getOrganizationGeneralInformation();
+            if ($organization && !empty($organization->getName())) {
+                return $organization->getName();
+            }
+        } catch (\Exception $e) {
+            // If organization service is not available or fails, fall back to default
+            $this->getLogger()->warning('Could not retrieve organization name: ' . $e->getMessage());
+        }
+        return "OrangeHRM";
+    }
+
+    /**
+     * @return OrganizationService
+     */
+    protected function getOrganizationService(): OrganizationService
+    {
+        if (is_null($this->organizationService)) {
+            $this->organizationService = new OrganizationService();
+        }
+        return $this->organizationService;
     }
 }

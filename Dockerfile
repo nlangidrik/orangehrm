@@ -70,6 +70,19 @@ RUN { \
 # Update PHP configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# Configure PHP for installation and migrations
+RUN { \
+		echo 'memory_limit=512M'; \
+		echo 'max_execution_time=0'; \
+		echo 'max_input_time=0'; \
+		echo 'post_max_size=100M'; \
+		echo 'upload_max_filesize=100M'; \
+		echo 'max_file_uploads=20'; \
+		echo 'date.timezone=UTC'; \
+		echo 'session.gc_maxlifetime=3600'; \
+		echo 'session.cookie_lifetime=0'; \
+	} > /usr/local/etc/php/conf.d/orangehrm.ini
+
 # Copy local source code to container (uses .dockerignore to exclude unnecessary files)
 COPY --chown=www-data:www-data . /var/www/html/
 
