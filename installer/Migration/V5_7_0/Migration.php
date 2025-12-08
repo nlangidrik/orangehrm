@@ -32,6 +32,9 @@ class Migration extends AbstractMigration
      */
     public function up(): void
     {
+        // Execute SQL migration to add position_name column
+        $this->execQueries('change_position_to_text.sql');
+
         $this->deleteLangStringTranslationByLangStringUnitId('translate_text_manually', $this->getLangHelper()->getGroupIdByName('admin'));
 
         $this->getLangHelper()->deleteLangStringByUnitId(
@@ -290,6 +293,22 @@ class Migration extends AbstractMigration
                     $groupId
                 );
             }
+        }
+    }
+
+    /**
+     * Execute SQL queries from a file
+     * @param string $fileName
+     */
+    private function execQueries(string $fileName): void
+    {
+        $script = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . $fileName);
+        $dbScriptStatements = preg_split('/;\s*$/m', $script);
+        foreach ($dbScriptStatements as $statement) {
+            if (empty(trim($statement))) {
+                continue;
+            }
+            $this->getConnection()->executeStatement($statement);
         }
     }
 }

@@ -316,12 +316,14 @@ class AppSetupUtility
                 'emp_number' => ':empNumber',
                 'user_name' => ':username',
                 'user_password' => ':hashedPassword',
+                'status' => ':status',
                 'date_entered' => ':created',
             ])
             ->setParameter('userRoleId', $adminUserRoleId)
             ->setParameter('empNumber', $empNumber)
             ->setParameter('username', $adminUserData[StateContainer::ADMIN_USERNAME])
             ->setParameter('hashedPassword', $hashedPassword)
+            ->setParameter('status', 1)
             ->setParameter('created', new DateTime(), Types::DATETIME_MUTABLE)
             ->executeQuery();
 
