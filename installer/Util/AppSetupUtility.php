@@ -536,19 +536,44 @@ class AppSetupUtility
      */
     private function _runMigration(string $migrationClass): void
     {
-        $migration = new $migrationClass();
-        if ($migration instanceof AbstractMigration) {
-            $version = $migration->getVersion();
-            $this->getMigrationHelper()->logMigrationStarted($version);
-            StateContainer::getInstance()->setMigrationCompleted(false);
-            $this->disableExecutionTimeLimit();
-            $migration->up();
-            $this->getConfigHelper()->setConfigValue('instance.version', $version);
-            StateContainer::getInstance()->setMigrationCompleted(true);
-            $this->getMigrationHelper()->logMigrationFinished($version);
-            return;
+        try {
+            $migration = new $migrationClass();
+            if ($migration instanceof AbstractMigration) {
+                $version = $migration->getVersion();
+                $this->getMigrationHelper()->logMigrationStarted($version);
+                StateContainer::getInstance()->setMigrationCompleted(false);
+                $this->disableExecutionTimeLimit();
+                
+                // Ensure database connection is still alive by executing a simple query
+                try {
+                    Connection::getConnection()->executeQuery('SELECT 1');
+                } catch (\Throwable $e) {
+                    Logger::getLogger()->warning('Database connection check failed, attempting reconnect: ' . $e->getMessage());
+                    Connection::reset();
+                    Connection::getConnection()->executeQuery('SELECT 1');
+                }
+                
+                $migration->up();
+                $this->getConfigHelper()->setConfigValue('instance.version', $version);
+                StateContainer::getInstance()->setMigrationCompleted(true);
+                $this->getMigrationHelper()->logMigrationFinished($version);
+                return;
+            }
+            throw new InvalidArgumentException("Invalid migration class `$migrationClass`");
+        } catch (MigrationException $e) {
+            // Re-throw MigrationException as-is
+            throw $e;
+        } catch (\Throwable $e) {
+            // Log the error with context
+            Logger::getLogger()->error("Migration failed for class: $migrationClass");
+            Logger::getLogger()->error("Error: " . $e->getMessage());
+            Logger::getLogger()->error("File: " . $e->getFile() . ":" . $e->getLine());
+            Logger::getLogger()->error("Trace: " . $e->getTraceAsString());
+            
+            // Create a new MigrationException with the error message
+            $migrationException = new MigrationException("Migration failed: " . $e->getMessage());
+            throw $migrationException;
         }
-        throw new InvalidArgumentException("Invalid migration class `$migrationClass`");
     }
 
     /**
@@ -560,6 +585,40 @@ class AppSetupUtility
             $success = set_time_limit(0);
             Logger::getLogger()->info('set_time_limit: ' . ($success ? 'success' : 'fail'));
         }
+        
+        // Also increase memory limit if possible
+        $currentMemoryLimit = ini_get('memory_limit');
+        if ($currentMemoryLimit && $currentMemoryLimit !== '-1') {
+            $currentBytes = $this->convertToBytes($currentMemoryLimit);
+            $minBytes = 512 * 1024 * 1024; // 512MB minimum
+            if ($currentBytes < $minBytes) {
+                $newLimit = ini_set('memory_limit', '512M');
+                Logger::getLogger()->info('memory_limit increased from ' . $currentMemoryLimit . ' to ' . ($newLimit ?: '512M'));
+            }
+        }
+    }
+    
+    /**
+     * Convert memory limit string to bytes
+     */
+    private function convertToBytes(string $value): int
+    {
+        $value = trim($value);
+        $last = strtolower($value[strlen($value) - 1]);
+        $value = (int) $value;
+        
+        switch ($last) {
+            case 'g':
+                $value *= 1024;
+                // no break
+            case 'm':
+                $value *= 1024;
+                // no break
+            case 'k':
+                $value *= 1024;
+        }
+        
+        return $value;
     }
 
     /**

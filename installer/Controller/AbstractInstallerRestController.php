@@ -94,16 +94,35 @@ abstract class AbstractInstallerRestController extends AbstractInstallerControll
             return $response;
         } catch (Throwable $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $errorMessage = $e->getMessage();
+            $errorClass = get_class($e);
+            
+            // Log full error details
+            Logger::getLogger()->error("Error in " . get_class($this) . ": $errorClass");
+            Logger::getLogger()->error("Message: $errorMessage");
+            Logger::getLogger()->error("File: " . $e->getFile() . ":" . $e->getLine());
+            Logger::getLogger()->error("Trace: " . $e->getTraceAsString());
+            
+            // Provide more helpful error message for common issues
+            if (strpos($errorMessage, 'memory') !== false || strpos($errorMessage, 'Memory') !== false) {
+                $errorMessage = 'Insufficient memory. Please increase PHP memory_limit.';
+            } elseif (strpos($errorMessage, 'timeout') !== false || strpos($errorMessage, 'Timeout') !== false || strpos($errorMessage, 'execution time') !== false) {
+                $errorMessage = 'Execution timeout. Please increase PHP max_execution_time.';
+            } elseif (strpos($errorMessage, 'SQL') !== false || strpos($errorMessage, 'database') !== false || strpos($errorMessage, 'Database') !== false) {
+                $errorMessage = 'Database error: ' . $errorMessage;
+            } elseif (strpos($errorMessage, 'Connection') !== false || strpos($errorMessage, 'connection') !== false) {
+                $errorMessage = 'Database connection error. Please check your database configuration.';
+            }
+            
             $response->setContent(
                 json_encode([
                     'error' => [
                         'status' => $response->getStatusCode(),
-                        'message' => 'Unexpected Error',
+                        'message' => $errorMessage,
+                        'type' => $errorClass,
                     ]
                 ])
             );
-            Logger::getLogger()->error($e->getMessage());
-            Logger::getLogger()->error($e->getTraceAsString());
             return $response;
         }
         $response->setContent(json_encode($data));
